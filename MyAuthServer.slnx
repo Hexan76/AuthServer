@@ -1,0 +1,30 @@
+<Solution>
+    <Folder Name="/AbpWeb/">
+        <Project Path="../../../abp/modules/account/src/Volo.Abp.Account.Application.Contracts/Volo.Abp.Account.Application.Contracts.csproj" />
+        <Project Path="../../../abp/modules/account/src/Volo.Abp.Account.Application/Volo.Abp.Account.Application.csproj" />
+        <Project Path="../../../abp/modules/account/src/Volo.Abp.Account.HttpApi/Volo.Abp.Account.HttpApi.csproj" />
+        <Project Path="../../../abp/modules/account/src/Volo.Abp.Account.Web/Volo.Abp.Account.Web.csproj" />
+    </Folder>
+    <Folder Name="/AbpWeb/AbpOpenIddict/">
+        <Project Path="../../../abp/modules/account/src/Volo.Abp.Account.Web.OpenIddict/Volo.Abp.Account.Web.OpenIddict.csproj" />
+    </Folder>
+    <Folder Name="/src/">
+        <Project Path="src/MyAuthServer.Application.Contracts/MyAuthServer.Application.Contracts.csproj" />
+        <Project Path="src/MyAuthServer.Application/MyAuthServer.Application.csproj" />
+        <Project Path="src/MyAuthServer.DbMigrator/MyAuthServer.DbMigrator.csproj" />
+        <Project Path="src/MyAuthServer.Domain.Shared/MyAuthServer.Domain.Shared.csproj" />
+        <Project Path="src/MyAuthServer.Domain/MyAuthServer.Domain.csproj" />
+        <Project Path="src/MyAuthServer.EntityFrameworkCore/MyAuthServer.EntityFrameworkCore.csproj" />
+        <Project Path="src/MyAuthServer.HttpApi.Client/MyAuthServer.HttpApi.Client.csproj" />
+        <Project Path="src/MyAuthServer.HttpApi/MyAuthServer.HttpApi.csproj" />
+        <Project Path="src/MyAuthServer.Web/MyAuthServer.Web.csproj" />
+    </Folder>
+    <Folder Name="/test/">
+        <Project Path="test/MyAuthServer.Application.Tests/MyAuthServer.Application.Tests.csproj" />
+        <Project Path="test/MyAuthServer.Domain.Tests/MyAuthServer.Domain.Tests.csproj" />
+        <Project Path="test/MyAuthServer.EntityFrameworkCore.Tests/MyAuthServer.EntityFrameworkCore.Tests.csproj" />
+        <Project Path="test/MyAuthServer.HttpApi.Client.ConsoleTestApp/MyAuthServer.HttpApi.Client.ConsoleTestApp.csproj" />
+        <Project Path="test/MyAuthServer.TestBase/MyAuthServer.TestBase.csproj" />
+        <Project Path="test/MyAuthServer.Web.Tests/MyAuthServer.Web.Tests.csproj" />
+    </Folder>
+</Solution>
