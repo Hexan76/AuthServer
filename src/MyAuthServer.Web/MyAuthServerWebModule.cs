@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
@@ -9,10 +11,13 @@ using MyAuthServer.EntityFrameworkCore;
 using MyAuthServer.Localization;
 using MyAuthServer.MultiTenancy;
 using MyAuthServer.Web.HealthChecks;
+using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 
 //using MyAuthServer.Web.Menus;
 using System.IO;
+using System.Net;
+using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.AspNetCore.MultiTenancy;
@@ -79,35 +84,48 @@ public class MyAuthServerWebModule : AbpModule
 
         context.Services.AddAuthentication(options =>
         {
-            options.AddScheme("Github", Gitoptions =>
+            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        })
+        .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+        {
+            options.LoginPath = "/account2/login";
+        })
+        .AddGoogle(googleOptions =>
+        {
+            googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
+            googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+            googleOptions.CallbackPath = "/callback/login/github";
+
+            googleOptions.Events.OnRedirectToAuthorizationEndpoint = context =>
             {
-                Gitoptions.DisplayName = "Github2";
-                Gitoptions.HandlerType = typeof(OpenIddictServerAspNetCoreHandler);
-            });
+                context.Response.Redirect(context.RedirectUri + "&prompt=consent");
+                return Task.CompletedTask;
+            };
         });
 
         // Add OpenIddict for client configuration
-        context.Services.AddOpenIddict()
-            .AddClient(options =>
-            {
-                // Add GitHub authentication using values from the configuration
-                options.UseWebProviders()
-                    .AddGitHub(githubOptions =>
-                    {
-                        githubOptions.SetClientId(configuration["Authentication:Github:ClientId"])  // Get from appsettings
-                                     .SetClientSecret(configuration["Authentication:Github:ClientSecret"])  // Get from appsettings
-                                     .SetRedirectUri("https://localhost:44310/callback/login/github");  // Redirect URI
-                    })
-                    // Add Google authentication using values from the configuration
-                    .AddGoogle(googleOptions =>
-                    {
-                        googleOptions.SetClientId(configuration["Authentication:Google:ClientId"])  // Get from appsettings
-                                     .SetClientSecret(configuration["Authentication:Google:ClientSecret"])  // Get from appsettings
-                                     .SetRedirectUri("https://localhost:44310/callback/login/google");  // Redirect URI
-                    });
-            });
+        context.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme);
+        //context.Services.AddOpenIddict()
+        //    .AddClient(options =>
+        //    {
+        //        // Add GitHub authentication using values from the configuration
+        //        options.UseWebProviders()
+        //            .AddGitHub(githubOptions =>
+        //            {
+        //                githubOptions.SetClientId(configuration["Authentication:Github:ClientId"])  // Get from appsettings
+        //                             .SetClientSecret(configuration["Authentication:Github:ClientSecret"])  // Get from appsettings
+        //                             .SetRedirectUri("https://localhost:44310/callback/login/github");  // Redirect URI
+        //            })
+        //            // Add Google authentication using values from the configuration
+        //            .AddGoogle(googleOptions =>
+        //            {
+        //                googleOptions.SetClientId(configuration["Authentication:Google:ClientId"])  // Get from appsettings
+        //                             .SetClientSecret(configuration["Authentication:Google:ClientSecret"])  // Get from appsettings
+        //                             .SetRedirectUri("https://localhost:44310/Account2/Login?handler=ExternalLoginCallback");  // Redirect URI
+        //            });
+        //    });
 
-
+        
         PreConfigure<OpenIddictBuilder>(builder =>
             {
                 builder.AddServer(options =>
