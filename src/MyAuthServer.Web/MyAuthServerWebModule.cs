@@ -1,55 +1,41 @@
-﻿using System.IO;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi;
 using MyAuthServer.EntityFrameworkCore;
 using MyAuthServer.Localization;
 using MyAuthServer.MultiTenancy;
-using MyAuthServer.Permissions;
-using MyAuthServer.Web.Menus;
 using MyAuthServer.Web.HealthChecks;
-using Microsoft.OpenApi;
+//using MyAuthServer.Web.Menus;
+using System.IO;
 using Volo.Abp;
-using Volo.Abp.Studio;
+using Volo.Abp.AspNetCore.MultiTenancy;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.AspNetCore.Mvc.Localization;
-using Volo.Abp.AspNetCore.Mvc.UI;
-using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
-using Volo.Abp.Autofac;
-using Volo.Abp.Mapperly;
-using Volo.Abp.Modularity;
-using Volo.Abp.PermissionManagement;
-using Volo.Abp.PermissionManagement.Web;
-using Volo.Abp.UI.Navigation.Urls;
-using Volo.Abp.UI;
-using Volo.Abp.UI.Navigation;
-using Volo.Abp.VirtualFileSystem;
-using Volo.Abp.Identity.Web;
-using Volo.Abp.FeatureManagement;
 //using OpenIddict.Server.AspNetCore;
 //using OpenIddict.Validation.AspNetCore;
-using Volo.Abp.TenantManagement.Web;
-using System;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Authentication;
 //using Microsoft.AspNetCore.Extensions.DependencyInjection;
 //using Volo.Abp.Account.Web;
-using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared.Toolbars;
+//using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
+//using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
+//using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared.Toolbars;
 using Volo.Abp.AspNetCore.Serilog;
-using Volo.Abp.Identity;
-using Volo.Abp.Swashbuckle;
+using Volo.Abp.Autofac;
+using Volo.Abp.FeatureManagement;
+using Volo.Abp.Modularity;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.OpenIddict;
+using Volo.Abp.PermissionManagement;
 using Volo.Abp.Security.Claims;
-using Volo.Abp.SettingManagement.Web;
+using Volo.Abp.Studio;
 using Volo.Abp.Studio.Client.AspNetCore;
+using Volo.Abp.Swashbuckle;
+using Volo.Abp.UI.Navigation;
+using Volo.Abp.UI.Navigation.Urls;
+using Volo.Abp.VirtualFileSystem;
 
 namespace MyAuthServer.Web;
 
@@ -59,11 +45,7 @@ namespace MyAuthServer.Web;
     typeof(MyAuthServerEntityFrameworkCoreModule),
     typeof(AbpAutofacModule),
     typeof(AbpStudioClientAspNetCoreModule),
-    typeof(AbpIdentityWebModule),
-    typeof(AbpAspNetCoreMvcUiLeptonXLiteThemeModule),
-    //typeof(AbpAccountWebOpenIddictModule),
-    typeof(AbpTenantManagementWebModule),
-    typeof(AbpFeatureManagementWebModule),
+    typeof(AbpAspNetCoreMultiTenancyModule),
     typeof(AbpSwashbuckleModule),
     typeof(AbpAspNetCoreSerilogModule)
 )]
@@ -103,6 +85,9 @@ public class MyAuthServerWebModule : AbpModule
                 // 🔐 REQUIRED for SPA / Node.js frontend
                 options.RequireProofKeyForCodeExchange(); // PKCE
 
+
+                options.AddDevelopmentEncryptionCertificate()
+                       .AddDevelopmentSigningCertificate();
                 // Standard OIDC scopes
                 options.RegisterScopes(
                     "openid",
@@ -149,10 +134,10 @@ public class MyAuthServerWebModule : AbpModule
 
         if (!configuration.GetValue<bool>("AuthServer:RequireHttpsMetadata"))
         {
-            Configure<OpenIddictServerAspNetCoreOptions>(options =>
-            {
-                options.DisableTransportSecurityRequirement = true;
-            });
+            //    Configure<OpenIddictServerAspNetCoreOptions>(options =>
+            //    {
+            //        options.DisableTransportSecurityRequirement = true;
+            //    });
 
             Configure<ForwardedHeadersOptions>(options =>
             {
@@ -203,28 +188,7 @@ public class MyAuthServerWebModule : AbpModule
 
     private void ConfigureBundles(IHostEnvironment hostingEnvironment)
     {
-        Configure<AbpBundlingOptions>(options =>
-        {
-            options.StyleBundles.Configure(
-                LeptonXLiteThemeBundles.Styles.Global,
-                bundle =>
-                {
-                    bundle.AddFiles("/global-styles.css");
-                }
-            );
 
-            options.ScriptBundles.Configure(
-                LeptonXLiteThemeBundles.Scripts.Global,
-                bundle =>
-                {
-                    bundle.AddFiles("/global-scripts.js");
-                    if (hostingEnvironment.IsDevelopment())
-                    {
-                        bundle.AddFiles("/dev-login-helper.js");
-                    }
-                }
-            );
-        });
     }
 
     private void ConfigureUrls(IConfiguration configuration)
@@ -264,15 +228,15 @@ public class MyAuthServerWebModule : AbpModule
 
     private void ConfigureNavigationServices()
     {
-        Configure<AbpNavigationOptions>(options =>
-        {
-            options.MenuContributors.Add(new MyAuthServerMenuContributor());
-        });
+        //Configure<AbpNavigationOptions>(options =>
+        //{
+        //    options.MenuContributors.Add(new MyAuthServerMenuContributor());
+        //});
 
-        Configure<AbpToolbarOptions>(options =>
-        {
-            options.Contributors.Add(new MyAuthServerToolbarContributor());
-        });
+        //Configure<AbpToolbarOptions>(options =>
+        //{
+        //    options.Contributors.Add(new MyAuthServerToolbarContributor());
+        //});
     }
 
     private void ConfigureAutoApiControllers()
@@ -311,7 +275,7 @@ public class MyAuthServerWebModule : AbpModule
 
         if (!env.IsDevelopment())
         {
-            app.UseErrorPage();
+            //app.UseErrorPage();
             app.UseHsts();
         }
 
