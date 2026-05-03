@@ -9,9 +9,12 @@ using MyAuthServer.EntityFrameworkCore;
 using MyAuthServer.Localization;
 using MyAuthServer.MultiTenancy;
 using MyAuthServer.Web.HealthChecks;
+using OpenIddict.Server.AspNetCore;
+
 //using MyAuthServer.Web.Menus;
 using System.IO;
 using Volo.Abp;
+using Volo.Abp.Account;
 using Volo.Abp.AspNetCore.MultiTenancy;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.AspNetCore.Mvc.Localization;
@@ -25,6 +28,7 @@ using Volo.Abp.AspNetCore.Mvc.Localization;
 using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.FeatureManagement;
+using Volo.Abp.Identity.AspNetCore;
 using Volo.Abp.Modularity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.OpenIddict;
@@ -47,6 +51,11 @@ namespace MyAuthServer.Web;
     typeof(AbpStudioClientAspNetCoreModule),
     typeof(AbpAspNetCoreMultiTenancyModule),
     typeof(AbpSwashbuckleModule),
+
+    typeof(AbpAccountHttpApiModule),
+    typeof(AbpIdentityAspNetCoreModule),
+    typeof(AbpAccountApplicationModule),
+
     typeof(AbpAspNetCoreSerilogModule)
 )]
 public class MyAuthServerWebModule : AbpModule
@@ -67,6 +76,33 @@ public class MyAuthServerWebModule : AbpModule
                 typeof(MyAuthServerWebModule).Assembly
             );
         });
+
+        context.Services.AddAuthentication(options =>
+        {
+            options.AddScheme("Github", Gitoptions =>
+            {
+                Gitoptions.DisplayName = "Github2";
+                Gitoptions.HandlerType = typeof(OpenIddictServerAspNetCoreHandler);
+            });
+        });
+
+        context.Services.AddOpenIddict()
+            .AddClient(options =>
+            {
+                options.UseWebProviders()
+               .AddGitHub(options =>
+               {
+                   options.SetClientId("Ov23liqznqXAOu3qiQr3")
+                          .SetClientSecret("06c716496a13188f306fdc16118a6685a42f2f87")
+                          .SetRedirectUri("callback/login/github");
+               })
+               .AddGoogle(options =>
+               {
+                   options.SetClientId("910098802149-imbdraaq87p4p4logffo8ebaa4punpf1.apps.googleusercontent.com")
+                           .SetClientSecret("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")
+                           .SetRedirectUri("https://localhost:44310/callback/login/github");
+               });
+            });
 
         PreConfigure<OpenIddictBuilder>(builder =>
         {
@@ -96,6 +132,7 @@ public class MyAuthServerWebModule : AbpModule
                     "roles",
                     "MyAuthServer"
                 );
+
 
                 // ASP.NET integration
                 options.UseAspNetCore()

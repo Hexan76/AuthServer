@@ -22,7 +22,7 @@ namespace Volo.Abp.Account.Web.Areas.Account.Controllers;
 [Controller]
 [ControllerName("Login")]
 [Area("account")]
-[Route("api/account")]
+[Route("api/account2")]
 public class AccountController : AbpControllerBase
 {
     protected SignInManager<IdentityUser> SignInManager { get; }

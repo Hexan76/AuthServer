@@ -1,0 +1,66 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.Localization
+@using MyAuthServer.Web.Pages.Account2
+@using Volo.Abp.Account.Localization
+@model RegisterModel
+@inject IHtmlLocalizer<AccountResource> L
+
+<div class="card mt-3 shadow-sm rounded">
+    <div class="card-body p-5">
+        <h4>@L["Register"]</h4>
+        <strong>
+            @L["AlreadyRegistered"]
+            <a href="@Url.Page("/Account2/Login", new { returnUrl = Model.ReturnUrl, returnUrlHash = Model.ReturnUrlHash })" class="text-decoration-none">@L["Login"]</a>
+        </strong>
+
+        <form method="post" class="mt-4">
+            @if (Model.EnableLocalRegister || Model.IsExternalLogin)
+            {
+                <div class="mb-3">
+                    <label for="UserName" class="form-label">@L["UserName"]</label>
+                    <input type="text" id="UserName" name="Input.UserName" class="form-control" value="@Model?.Input?.UserName" autofocus required />
+                </div>
+            }
+
+            @if (Model.EnableLocalRegister || Model.IsExternalLogin)
+            {
+                <div class="mb-3">
+                    <label for="Email" class="form-label">@L["Email"]</label>
+                    <input type="email" id="Email" name="Input.EmailAddress" class="form-control" value="@Model?.Input?.EmailAddress" required />
+                </div>
+            }
+
+            @if (!Model.IsExternalLogin && Model.EnableLocalRegister)
+            {
+                <div class="mb-3">
+                    <label for="Password" class="form-label">@L["Password"]</label>
+                    <input type="password" id="Password" name="Input?.Password" class="form-control" required />
+                </div>
+            }
+
+            @if (Model.EnableLocalRegister || Model.IsExternalLogin)
+            {
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg mt-4">@L["Register"]</button>
+                </div>
+            }
+
+        </form>
+
+        @if (!Model.IsExternalLogin && Model.VisibleExternalProviders.Any())
+        {
+            <div class="mt-2">
+                <h5>@L["OrRegisterWith"]</h5>
+                <form asp-page="/Account2/Login" asp-page-handler="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" asp-route-returnUrlHash="@Model.ReturnUrlHash" method="post">
+                    @foreach (var provider in Model.VisibleExternalProviders)
+                    {
+                        <button type="submit" class="btn btn-primary m-1" name="provider" value="@provider.AuthenticationScheme" title="@L["RegisterUsingYourProviderAccount", provider.DisplayName]">
+                            @provider.DisplayName
+                        </button>
+                    }
+                </form>
+            </div>
+        }
+
+    </div>
+</div>
