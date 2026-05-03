@@ -86,68 +86,72 @@ public class MyAuthServerWebModule : AbpModule
             });
         });
 
+        // Add OpenIddict for client configuration
         context.Services.AddOpenIddict()
             .AddClient(options =>
             {
+                // Add GitHub authentication using values from the configuration
                 options.UseWebProviders()
-               .AddGitHub(options =>
-               {
-                   options.SetClientId("Ov23liqznqXAOu3qiQr3")
-                          .SetClientSecret("06c716496a13188f306fdc16118a6685a42f2f87")
-                          .SetRedirectUri("callback/login/github");
-               })
-               .AddGoogle(options =>
-               {
-                   options.SetClientId("910098802149-imbdraaq87p4p4logffo8ebaa4punpf1.apps.googleusercontent.com")
-                           .SetClientSecret("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")
-                           .SetRedirectUri("https://localhost:44310/callback/login/github");
-               });
+                    .AddGitHub(githubOptions =>
+                    {
+                        githubOptions.SetClientId(configuration["Authentication:Github:ClientId"])  // Get from appsettings
+                                     .SetClientSecret(configuration["Authentication:Github:ClientSecret"])  // Get from appsettings
+                                     .SetRedirectUri("https://localhost:44310/callback/login/github");  // Redirect URI
+                    })
+                    // Add Google authentication using values from the configuration
+                    .AddGoogle(googleOptions =>
+                    {
+                        googleOptions.SetClientId(configuration["Authentication:Google:ClientId"])  // Get from appsettings
+                                     .SetClientSecret(configuration["Authentication:Google:ClientSecret"])  // Get from appsettings
+                                     .SetRedirectUri("https://localhost:44310/callback/login/google");  // Redirect URI
+                    });
             });
+
 
         PreConfigure<OpenIddictBuilder>(builder =>
-        {
-            builder.AddServer(options =>
             {
-                // Endpoints (standard OIDC)
-                options.SetAuthorizationEndpointUris("/connect/authorize");
-                options.SetTokenEndpointUris("/connect/token");
-                options.SetUserInfoEndpointUris("/connect/userinfo");
+                builder.AddServer(options =>
+                {
+                    // Endpoints (standard OIDC)
+                    options.SetAuthorizationEndpointUris("/connect/authorize");
+                    options.SetTokenEndpointUris("/connect/token");
+                    options.SetUserInfoEndpointUris("/connect/userinfo");
 
-                // === OAuth Flows (ONLY what Node.js needs) ===
-                options.AllowAuthorizationCodeFlow();   // SPA + web login
-                options.AllowRefreshTokenFlow();        // session persistence
-                options.AllowClientCredentialsFlow();   // backend services
+                    // === OAuth Flows (ONLY what Node.js needs) ===
+                    options.AllowAuthorizationCodeFlow();   // SPA + web login
+                    options.AllowRefreshTokenFlow();        // session persistence
+                    options.AllowClientCredentialsFlow();   // backend services
 
-                // 🔐 REQUIRED for SPA / Node.js frontend
-                options.RequireProofKeyForCodeExchange(); // PKCE
-
-
-                options.AddDevelopmentEncryptionCertificate()
-                       .AddDevelopmentSigningCertificate();
-                // Standard OIDC scopes
-                options.RegisterScopes(
-                    "openid",
-                    "profile",
-                    "email",
-                    "roles",
-                    "MyAuthServer"
-                );
+                    // 🔐 REQUIRED for SPA / Node.js frontend
+                    options.RequireProofKeyForCodeExchange(); // PKCE
 
 
-                // ASP.NET integration
-                options.UseAspNetCore()
-                    .EnableAuthorizationEndpointPassthrough()
-                    .EnableTokenEndpointPassthrough()
-                    .EnableUserInfoEndpointPassthrough();
+                    options.AddDevelopmentEncryptionCertificate()
+                           .AddDevelopmentSigningCertificate();
+                    // Standard OIDC scopes
+                    options.RegisterScopes(
+                        "openid",
+                        "profile",
+                        "email",
+                        "roles",
+                        "MyAuthServer"
+                    );
+
+
+                    // ASP.NET integration
+                    options.UseAspNetCore()
+                        .EnableAuthorizationEndpointPassthrough()
+                        .EnableTokenEndpointPassthrough()
+                        .EnableUserInfoEndpointPassthrough();
+                });
+
+                builder.AddValidation(options =>
+                {
+                    options.AddAudiences("MyAuthServer");
+                    options.UseLocalServer();
+                    options.UseAspNetCore();
+                });
             });
-
-            builder.AddValidation(options =>
-            {
-                options.AddAudiences("MyAuthServer");
-                options.UseLocalServer();
-                options.UseAspNetCore();
-            });
-        });
 
         if (!hostingEnvironment.IsDevelopment())
         {
