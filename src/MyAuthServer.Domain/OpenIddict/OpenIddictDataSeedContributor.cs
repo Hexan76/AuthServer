@@ -103,7 +103,8 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
                 secret: null,
                 grantTypes: new List<string>
                 {
-                OpenIddictConstants.GrantTypes.AuthorizationCode
+                        OpenIddictConstants.GrantTypes.AuthorizationCode,
+                        OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange // 🔥 PKCE
                 },
                 scopes: commonScopes,
                 redirectUris: new List<string> { $"{swaggerRootUrl}/swagger/oauth2-redirect.html" },
@@ -117,12 +118,12 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
         await CreateOrUpdateApplicationAsync(
             applicationType: OpenIddictConstants.ApplicationTypes.Web,
             name: "react-spa",
-            type: OpenIddictConstants.ClientTypes.Public,
+            type: OpenIddictConstants.ClientTypes.Confidential,
             consentType: OpenIddictConstants.ConsentTypes.Implicit,
 
             displayName: "React SPA",
 
-            secret: null,
+            secret: "react-spa-Secret",
 
             grantTypes: new List<string>
             {

@@ -94,7 +94,7 @@ public class LoginModel : AccountPageModel
     {
         await CheckLocalLoginAsync();
 
-        ValidateModel();
+        //ValidateModel();
 
         ExternalProviders = await GetExternalProviders();
 
@@ -148,7 +148,7 @@ public class LoginModel : AccountPageModel
                 }
             }
 
-            Alerts.Danger(L["InvalidUserNameOrPassword"]);
+            //Alerts.Danger(L["InvalidUserNameOrPassword"]);
             return Page();
         }
 

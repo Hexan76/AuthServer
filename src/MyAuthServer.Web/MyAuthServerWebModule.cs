@@ -13,6 +13,10 @@ using MyAuthServer.MultiTenancy;
 using MyAuthServer.Web.HealthChecks;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
+using System;
+using System.Collections.Generic;
+
+
 
 //using MyAuthServer.Web.Menus;
 using System.IO;
@@ -89,6 +93,11 @@ public class MyAuthServerWebModule : AbpModule
         .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
         {
             options.LoginPath = "/account2/login";
+        }).AddGitHub(gitOptions =>
+        {
+            gitOptions.ClientId = configuration["Authentication:Github:ClientId"];
+            gitOptions.ClientSecret = configuration["Authentication:Github:ClientSecret"];
+            gitOptions.CallbackPath = "/callback/login/github";
         })
         .AddGoogle(googleOptions =>
         {
@@ -104,28 +113,28 @@ public class MyAuthServerWebModule : AbpModule
         });
 
         // Add OpenIddict for client configuration
-        context.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme);
-        //context.Services.AddOpenIddict()
-        //    .AddClient(options =>
-        //    {
-        //        // Add GitHub authentication using values from the configuration
-        //        options.UseWebProviders()
-        //            .AddGitHub(githubOptions =>
-        //            {
-        //                githubOptions.SetClientId(configuration["Authentication:Github:ClientId"])  // Get from appsettings
-        //                             .SetClientSecret(configuration["Authentication:Github:ClientSecret"])  // Get from appsettings
-        //                             .SetRedirectUri("https://localhost:44310/callback/login/github");  // Redirect URI
-        //            })
-        //            // Add Google authentication using values from the configuration
-        //            .AddGoogle(googleOptions =>
-        //            {
-        //                googleOptions.SetClientId(configuration["Authentication:Google:ClientId"])  // Get from appsettings
-        //                             .SetClientSecret(configuration["Authentication:Google:ClientSecret"])  // Get from appsettings
-        //                             .SetRedirectUri("https://localhost:44310/Account2/Login?handler=ExternalLoginCallback");  // Redirect URI
-        //            });
-        //    });
 
-        
+        context.Services.AddOpenIddict()
+            .AddClient(options =>
+            {
+                // Add GitHub authentication using values from the configuration
+                options.UseWebProviders()
+                    .AddGitHub(githubOptions =>
+                    {
+                        githubOptions.SetClientId(configuration["Authentication:Github:ClientId"])  // Get from appsettings
+                                     .SetClientSecret(configuration["Authentication:Github:ClientSecret"])  // Get from appsettings
+                                     .SetRedirectUri("https://localhost:44310/callback/login/github");  // Redirect URI
+                    })
+                    // Add Google authentication using values from the configuration
+                    .AddGoogle(googleOptions =>
+                    {
+                        googleOptions.SetClientId(configuration["Authentication:Google:ClientId"])  // Get from appsettings
+                                     .SetClientSecret(configuration["Authentication:Google:ClientSecret"])  // Get from appsettings
+                                     .SetRedirectUri("https://localhost:44310/Account2/Login?handler=ExternalLoginCallback");  // Redirect URI
+                    });
+            });
+
+
         PreConfigure<OpenIddictBuilder>(builder =>
             {
                 builder.AddServer(options =>
@@ -316,6 +325,25 @@ public class MyAuthServerWebModule : AbpModule
                 options.CustomSchemaIds(type => type.FullName);
             }
         );
+        services.AddSwaggerGen(c =>
+        {
+            c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.OAuth2,
+                Flows = new OpenApiOAuthFlows
+                {
+                    AuthorizationCode = new OpenApiOAuthFlow
+                    {
+                        AuthorizationUrl = new Uri("https://localhost:44310/connect/authorize"),
+                        TokenUrl = new Uri("https://localhost:44310/connect/token"),
+                        Scopes = new Dictionary<string, string>
+                        {
+                            { "MyAuthServer", "MyAuthServer API" }
+                        }
+                    }
+                }
+            });
+        });
     }
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
@@ -344,7 +372,7 @@ public class MyAuthServerWebModule : AbpModule
         app.UseAbpStudioLink();
         app.UseAbpSecurityHeaders();
         app.UseAuthentication();
-        //app.UseAbpOpenIddictValidation();
+        app.UseAbpOpenIddictValidation();
 
         if (MultiTenancyConsts.IsEnabled)
         {
@@ -355,9 +383,14 @@ public class MyAuthServerWebModule : AbpModule
         app.UseDynamicClaims();
         app.UseAuthorization();
         app.UseSwagger();
-        app.UseAbpSwaggerUI(options =>
+        app.UseSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "MyAuthServer API");
+            options.OAuthClientId("swagger");
+            options.OAuthClientSecret(null);
+            options.OAuthScopes("MyAuthServer");
+            options.OAuthUsePkce();
+
         });
         app.UseAuditing();
         app.UseAbpSerilogEnrichers();
