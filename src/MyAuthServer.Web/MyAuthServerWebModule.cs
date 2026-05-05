@@ -26,6 +26,7 @@ using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.AspNetCore.MultiTenancy;
 using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.AspNetCore.Mvc.Libs;
 using Volo.Abp.AspNetCore.Mvc.Localization;
 //using OpenIddict.Server.AspNetCore;
 //using OpenIddict.Validation.AspNetCore;
@@ -59,8 +60,9 @@ namespace MyAuthServer.Web;
     typeof(AbpAutofacModule),
     typeof(AbpStudioClientAspNetCoreModule),
     typeof(AbpAspNetCoreMultiTenancyModule),
-    typeof(AbpSwashbuckleModule),
+    //typeof(AbpSwashbuckleModule),
 
+    typeof(AbpOpenIddictAspNetCoreModule),
     typeof(AbpAccountHttpApiModule),
     typeof(AbpIdentityAspNetCoreModule),
     typeof(AbpAccountApplicationModule),
@@ -88,12 +90,15 @@ public class MyAuthServerWebModule : AbpModule
 
         context.Services.AddAuthentication(options =>
         {
-            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         })
         .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
         {
             options.LoginPath = "/account2/login";
-        }).AddGitHub(gitOptions =>
+        })
+        .AddGitHub(gitOptions =>
         {
             gitOptions.ClientId = configuration["Authentication:Github:ClientId"];
             gitOptions.ClientSecret = configuration["Authentication:Github:ClientSecret"];
@@ -194,6 +199,11 @@ public class MyAuthServerWebModule : AbpModule
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
 
+
+        Configure<AbpMvcLibsOptions>(options =>
+        {
+            options.CheckLibs = false;
+        });
         if (!configuration.GetValue<bool>("App:DisablePII"))
         {
             Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
@@ -289,7 +299,7 @@ public class MyAuthServerWebModule : AbpModule
                 options.FileSets.ReplaceEmbeddedByPhysical<MyAuthServerApplicationContractsModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}MyAuthServer.Application.Contracts", Path.DirectorySeparatorChar)));
                 options.FileSets.ReplaceEmbeddedByPhysical<MyAuthServerApplicationModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}MyAuthServer.Application", Path.DirectorySeparatorChar)));
                 options.FileSets.ReplaceEmbeddedByPhysical<MyAuthServerHttpApiModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}..{0}src{0}MyAuthServer.HttpApi", Path.DirectorySeparatorChar)));
-                options.FileSets.ReplaceEmbeddedByPhysical<MyAuthServerWebModule>(hostingEnvironment.ContentRootPath);
+                //options.FileSets.ReplaceEmbeddedByPhysical<MyAuthServerWebModule>(hostingEnvironment.ContentRootPath);
             }
         });
     }
@@ -388,7 +398,7 @@ public class MyAuthServerWebModule : AbpModule
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "MyAuthServer API");
             options.OAuthClientId("swagger");
             options.OAuthClientSecret(null);
-            options.OAuthScopes("MyAuthServer");
+            options.OAuthScopes("openid", "profile", "MyAuthServer");
             options.OAuthUsePkce();
 
         });

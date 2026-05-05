@@ -49,6 +49,7 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
     {
         var commonScopes = new List<string>
     {
+        "openid",
         OpenIddictConstants.Permissions.Scopes.Address,
         OpenIddictConstants.Permissions.Scopes.Profile,
         OpenIddictConstants.Permissions.Scopes.Email,
@@ -98,7 +99,7 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
                 applicationType: OpenIddictConstants.ApplicationTypes.Web,
                 name: swaggerClientId!,
                 type: OpenIddictConstants.ClientTypes.Public,
-                consentType: OpenIddictConstants.ConsentTypes.Implicit,
+                consentType: OpenIddictConstants.ConsentTypes.External,
                 displayName: "Swagger UI",
                 secret: null,
                 grantTypes: new List<string>

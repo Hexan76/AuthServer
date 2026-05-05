@@ -46,6 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!--<ProjectReference Include="..\..\..\..\..\abp\modules\openiddict\src\Volo.Abp.OpenIddict.AspNetCore\Volo.Abp.OpenIddict.AspNetCore.csproj" />-->
     <ProjectReference Include="..\MyAuthServer.Application\MyAuthServer.Application.csproj" />
     <ProjectReference Include="..\MyAuthServer.HttpApi\MyAuthServer.HttpApi.csproj" />
     <ProjectReference Include="..\MyAuthServer.EntityFrameworkCore\MyAuthServer.EntityFrameworkCore.csproj" />
