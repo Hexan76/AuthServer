@@ -156,7 +156,7 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
     private async Task CreatePermissionServiceAsync(List<string> commonScopes)
     {
         await CreateOrUpdateApplicationAsync(
-            applicationType: OpenIddictConstants.ApplicationTypes.Native,
+            applicationType: OpenIddictConstants.ApplicationTypes.Web,
             name: "permission",
             type: OpenIddictConstants.ClientTypes.Confidential,
             consentType: OpenIddictConstants.ConsentTypes.Implicit,
