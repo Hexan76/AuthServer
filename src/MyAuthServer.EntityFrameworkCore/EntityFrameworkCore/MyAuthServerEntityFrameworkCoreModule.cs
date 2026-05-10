@@ -19,7 +19,7 @@ namespace MyAuthServer.EntityFrameworkCore;
 
 [DependsOn(
     typeof(MyAuthServerDomainModule),
-    typeof(AbpPermissionManagementEntityFrameworkCoreModule),
+    //typeof(AbpPermissionManagementEntityFrameworkCoreModule),
     typeof(AbpSettingManagementEntityFrameworkCoreModule),
     typeof(AbpEntityFrameworkCorePostgreSqlModule),
     typeof(AbpBackgroundJobsEntityFrameworkCoreModule),

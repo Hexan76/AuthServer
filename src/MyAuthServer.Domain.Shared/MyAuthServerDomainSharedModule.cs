@@ -19,7 +19,7 @@ namespace MyAuthServer;
     typeof(AbpAuditLoggingDomainSharedModule),
     typeof(AbpBackgroundJobsDomainSharedModule),
     typeof(AbpFeatureManagementDomainSharedModule),
-    typeof(AbpPermissionManagementDomainSharedModule),
+    //typeof(AbpPermissionManagementDomainSharedModule),
     typeof(AbpSettingManagementDomainSharedModule),
     typeof(AbpIdentityDomainSharedModule),
     typeof(AbpOpenIddictDomainSharedModule),

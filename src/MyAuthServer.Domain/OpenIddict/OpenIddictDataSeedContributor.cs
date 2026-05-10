@@ -88,6 +88,8 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
         //}
 
         await CreateNodeJsSpaClientAsync(commonScopes);
+        await CreatePostmanClientAsync(commonScopes);
+        await CreatePermissionServiceAsync(commonScopes);
 
         var swaggerClientId = configurationSection["MyAuthServer_Swagger:ClientId"];
 
@@ -148,6 +150,77 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
             postLogoutRedirectUris: new List<string>
             {
                 "http://localhost:3000"
+            }
+        );
+    }
+    private async Task CreatePermissionServiceAsync(List<string> commonScopes)
+    {
+        await CreateOrUpdateApplicationAsync(
+            applicationType: OpenIddictConstants.ApplicationTypes.Native,
+            name: "permission",
+            type: OpenIddictConstants.ClientTypes.Confidential,
+            consentType: OpenIddictConstants.ConsentTypes.Implicit,
+
+            displayName: "Permission Service",
+            secret: "permission-secret",
+
+            grantTypes: new List<string>
+            {
+                OpenIddictConstants.GrantTypes.ClientCredentials
+            },
+
+            scopes: new List<string>
+            {
+                "permissions.read",
+                "permissions.write"
+            },
+
+            redirectUris: new List<string>
+            {
+                "https://oauth.pstmn.io/v1/callback"
+            },
+
+            postLogoutRedirectUris: new List<string>
+            {
+
+            }
+        );
+    }
+    private async Task CreatePostmanClientAsync(List<string> commonScopes)
+    {
+        await CreateOrUpdateApplicationAsync(
+            applicationType: OpenIddictConstants.ApplicationTypes.Native,
+            name: "postman",
+            type: OpenIddictConstants.ClientTypes.Public,
+            consentType: OpenIddictConstants.ConsentTypes.Implicit,
+
+            displayName: "Postman",
+
+            secret: null,
+
+            grantTypes: new List<string>
+            {
+                OpenIddictConstants.GrantTypes.AuthorizationCode,
+                OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange // 🔥 PKCE
+            },
+
+            scopes: new List<string>
+            {
+                OpenIddictConstants.Permissions.Scopes.Address,
+                OpenIddictConstants.Permissions.Scopes.Profile,
+                OpenIddictConstants.Permissions.Scopes.Email,
+                OpenIddictConstants.Permissions.Scopes.Roles,
+                "MyAuthServer"
+            },
+
+            redirectUris: new List<string>
+            {
+                "https://oauth.pstmn.io/v1/callback"
+            },
+
+            postLogoutRedirectUris: new List<string>
+            {
+
             }
         );
     }
