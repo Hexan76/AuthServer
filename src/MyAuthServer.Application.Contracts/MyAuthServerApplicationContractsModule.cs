@@ -5,6 +5,7 @@ using Volo.Abp.SettingManagement;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
 using Volo.Abp.TenantManagement;
+using Framework.BuildingBlock.Application.Contracts;
 
 namespace MyAuthServer;
 
@@ -15,6 +16,7 @@ namespace MyAuthServer;
     typeof(AbpIdentityApplicationContractsModule),
     //typeof(AbpAccountApplicationContractsModule),
     typeof(AbpTenantManagementApplicationContractsModule),
+    typeof(BuildingBlockApplicationContractsModule),
     typeof(AbpPermissionManagementApplicationContractsModule)
 )]
 public class MyAuthServerApplicationContractsModule : AbpModule

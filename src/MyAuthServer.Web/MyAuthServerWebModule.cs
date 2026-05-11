@@ -243,7 +243,7 @@ public class MyAuthServerWebModule : AbpModule
 
         Configure<PermissionManagementOptions>(options =>
         {
-            options.IsDynamicPermissionStoreEnabled = true;
+            options.IsDynamicPermissionStoreEnabled = false;
         });
     }
 

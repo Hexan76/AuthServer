@@ -9,6 +9,14 @@
         <Project Path="../../../abp/modules/account/src/Volo.Abp.Account.Web.OpenIddict/Volo.Abp.Account.Web.OpenIddict.csproj" />
         <Project Path="../../../abp/modules/openiddict/src/Volo.Abp.OpenIddict.AspNetCore/Volo.Abp.OpenIddict.AspNetCore.csproj" />
     </Folder>
+    <Folder Name="/BuildingBlock/">
+        <Project Path="../building-block/src/Framework.BuildingBlock.Application.Contracts/Framework.BuildingBlock.Application.Contracts.csproj" />
+        <Project Path="../building-block/src/Framework.BuildingBlock.Application/Framework.BuildingBlock.Application.csproj" />
+        <Project Path="../building-block/src/Framework.BuildingBlock.Domain.Shared/Framework.BuildingBlock.Domain.Shared.csproj" />
+        <Project Path="../building-block/src/Framework.BuildingBlock.Domain/Framework.BuildingBlock.Domain.csproj" />
+        <Project Path="../building-block/src/Framework.BuildingBlock.EntityFrameworkCore/Framework.BuildingBlock.EntityFrameworkCore.csproj" />
+        <Project Path="../building-block/src/Framework.BuildingBlock.HttpApi/Framework.BuildingBlock.HttpApi.csproj" />
+    </Folder>
     <Folder Name="/Permission/">
         <Project Path="Permission/PermissionService.Application.Contracts/PermissionService.Application.Contracts.csproj" />
         <Project Path="Permission/PermissionService.Application/PermissionService.Application.csproj" />

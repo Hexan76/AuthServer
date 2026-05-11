@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\building-block\src\Framework.BuildingBlock.Domain\Framework.BuildingBlock.Domain.csproj" />
     <ProjectReference Include="..\MyAuthServer.Domain.Shared\MyAuthServer.Domain.Shared.csproj" />
   </ItemGroup>
 

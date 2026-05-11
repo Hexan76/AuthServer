@@ -7,6 +7,7 @@ using Volo.Abp.FeatureManagement;
 using Volo.Abp.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.TenantManagement;
+using Framework.BuildingBlock.Application;
 
 namespace MyAuthServer;
 
@@ -18,6 +19,7 @@ namespace MyAuthServer;
     typeof(AbpIdentityApplicationModule),
     //typeof(AbpAccountApplicationModule),
     typeof(AbpTenantManagementApplicationModule),
+    typeof(BuildingBlockApplicationModule),
     typeof(AbpSettingManagementApplicationModule)
     )]
 public class MyAuthServerApplicationModule : AbpModule
