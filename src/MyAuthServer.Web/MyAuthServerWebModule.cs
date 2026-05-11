@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +14,7 @@ using MyAuthServer.MultiTenancy;
 using MyAuthServer.Web.HealthChecks;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
+using OpenIddict.Validation.AspNetCore;
 using System;
 using System.Collections.Generic;
 
@@ -153,7 +155,7 @@ public class MyAuthServerWebModule : AbpModule
                     options.AllowAuthorizationCodeFlow();   // SPA + web login
                     options.AllowRefreshTokenFlow();        // session persistence
                     options.AllowClientCredentialsFlow();   // backend services
-
+                    options.AllowImplicitFlow();
                     // 🔐 REQUIRED for SPA / Node.js frontend
                     options.RequireProofKeyForCodeExchange(); // PKCE
 
@@ -184,6 +186,19 @@ public class MyAuthServerWebModule : AbpModule
                     options.UseAspNetCore();
                 });
             });
+
+        context.Services.AddCors(options =>
+        {
+            options.AddPolicy("SwaggerCors", policy =>
+            {
+                policy
+                    .WithOrigins("https://localhost:44310") // AuthServer
+                    .WithOrigins("https://localhost:44366") // PermissionService Swagger
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
+        });
 
         if (!hostingEnvironment.IsDevelopment())
         {
@@ -279,7 +294,7 @@ public class MyAuthServerWebModule : AbpModule
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
     {
-        //context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
+        context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
         context.Services.Configure<AbpClaimsPrincipalFactoryOptions>(options =>
         {
             options.IsDynamicClaimsEnabled = true;
@@ -353,6 +368,10 @@ public class MyAuthServerWebModule : AbpModule
                     }
                 }
             });
+            c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference("oauth2", document)] = []
+            });
         });
     }
 
@@ -378,6 +397,8 @@ public class MyAuthServerWebModule : AbpModule
 
         app.UseCorrelationId();
         app.UseRouting();
+        app.UseCors("SwaggerCors");
+
         app.MapAbpStaticAssets();
         app.UseAbpStudioLink();
         app.UseAbpSecurityHeaders();

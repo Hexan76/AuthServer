@@ -24,6 +24,7 @@
         <Project Path="Permission/PermissionService.Domain/PermissionService.Domain.csproj" />
         <Project Path="Permission/PermissionService.EntityFrameworkCore/PermissionService.EntityFrameworkCore.csproj" />
         <Project Path="Permission/PermissionService.HttpApi/PermissionService.HttpApi.csproj" />
+        <Project Path="Permission/PermissionService.Web/PermissionService.Web.csproj" />
     </Folder>
     <Folder Name="/src/">
         <Project Path="src/MyAuthServer.Application.Contracts/MyAuthServer.Application.Contracts.csproj" />

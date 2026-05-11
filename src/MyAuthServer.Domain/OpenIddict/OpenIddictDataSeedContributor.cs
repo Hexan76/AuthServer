@@ -101,16 +101,18 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
                 applicationType: OpenIddictConstants.ApplicationTypes.Web,
                 name: swaggerClientId!,
                 type: OpenIddictConstants.ClientTypes.Public,
-                consentType: OpenIddictConstants.ConsentTypes.External,
+                consentType: OpenIddictConstants.ConsentTypes.Implicit,
                 displayName: "Swagger UI",
                 secret: null,
                 grantTypes: new List<string>
                 {
-                        OpenIddictConstants.GrantTypes.AuthorizationCode,
-                        OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange // 🔥 PKCE
+                        OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange,
                 },
                 scopes: commonScopes,
-                redirectUris: new List<string> { $"{swaggerRootUrl}/swagger/oauth2-redirect.html" },
+                redirectUris: new List<string> 
+                { 
+                    $"{swaggerRootUrl}/swagger/oauth2-redirect.html" 
+                },
                 clientUri: swaggerRootUrl + "/swagger",
                 logoUri: "/images/clients/swagger.svg"
             );

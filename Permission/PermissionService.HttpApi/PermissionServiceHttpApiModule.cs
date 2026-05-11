@@ -1,12 +1,13 @@
 ﻿using Localization.Resources.AbpUi;
 using PermissionService.Localization;
-//using Volo.Abp.Account;
-using Volo.Abp.SettingManagement;
 using Volo.Abp.FeatureManagement;
+//using Volo.Abp.Account;
+//using Volo.Abp.SettingManagement;
+//using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
+using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.PermissionManagement.HttpApi;
-using Volo.Abp.Localization;
 using Volo.Abp.TenantManagement;
 
 namespace PermissionService;
@@ -14,11 +15,11 @@ namespace PermissionService;
  [DependsOn(
     typeof(PermissionServiceApplicationContractsModule),
     typeof(AbpPermissionManagementHttpApiModule),
-    typeof(AbpSettingManagementHttpApiModule),
+    //typeof(AbpSettingManagementHttpApiModule),
+    //typeof(AbpFeatureManagementHttpApiModule),
     //typeof(AbpAccountHttpApiModule),
     typeof(AbpIdentityHttpApiModule),
-    typeof(AbpTenantManagementHttpApiModule),
-    typeof(AbpFeatureManagementHttpApiModule)
+    typeof(AbpTenantManagementHttpApiModule)
     )]
 public class PermissionServiceHttpApiModule : AbpModule
 {
