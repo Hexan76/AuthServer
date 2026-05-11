@@ -30,11 +30,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="10.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI" Version="9.0.0" />
     <PackageReference Include="KubernetesClient" Version="18.0.5" />
     <PackageReference Include="IdentityModel" Version="7.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.3.9" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.2" />
@@ -43,6 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!--<ProjectReference Include="..\..\..\..\..\abp\modules\openiddict\src\Volo.Abp.OpenIddict.AspNetCore\Volo.Abp.OpenIddict.AspNetCore.csproj" />-->
     <ProjectReference Include="..\MyAuthServer.Application\MyAuthServer.Application.csproj" />
     <ProjectReference Include="..\MyAuthServer.HttpApi\MyAuthServer.HttpApi.csproj" />
     <ProjectReference Include="..\MyAuthServer.EntityFrameworkCore\MyAuthServer.EntityFrameworkCore.csproj" />
@@ -56,11 +60,15 @@
 		<PackageReference Include="Volo.Abp.OpenIddict.AspNetCore" Version="10.3.0" />
 		<PackageReference Include="Volo.Abp.Identity.AspNetCore" Version="10.3.0" />
 		<PackageReference Include="Volo.Abp.Account.HttpApi" Version="10.3.0" />
+		<PackageReference Include="Volo.Abp.Account.Application" Version="10.3.0" />
+		<PackageReference Include="OpenIddict.AspNetCore" Version="7.5.0" />
   </ItemGroup>
 
   <ItemGroup><!--<PackageReference Include="Volo.Abp.Account.Web.OpenIddict" Version="10.3.0" />-->
     <!--<PackageReference Include="Volo.Abp.Identity.Web" Version="10.3.0" />-->
     <!--<PackageReference Include="Volo.Abp.TenantManagement.Web" Version="10.3.0" />-->
+  
+    <Folder Include="Views\Account\" />
   
     <Folder Include="Views\Auth\" />
   </ItemGroup>

@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\building-block\src\Framework.BuildingBlock.HttpApi\Framework.BuildingBlock.HttpApi.csproj" />
     <ProjectReference Include="..\MyAuthServer.Application.Contracts\MyAuthServer.Application.Contracts.csproj" />
   </ItemGroup>
 

@@ -8,6 +8,7 @@ using Volo.Abp.Modularity;
 using Volo.Abp.PermissionManagement.HttpApi;
 using Volo.Abp.Localization;
 using Volo.Abp.TenantManagement;
+using Framework.BuildingBlock.HttpApi;
 
 namespace MyAuthServer;
 
@@ -17,6 +18,7 @@ namespace MyAuthServer;
     typeof(AbpSettingManagementHttpApiModule),
     //typeof(AbpAccountHttpApiModule),
     typeof(AbpIdentityHttpApiModule),
+    typeof(BuildingBlockHttpApiModule),
     typeof(AbpTenantManagementHttpApiModule),
     typeof(AbpFeatureManagementHttpApiModule)
     )]

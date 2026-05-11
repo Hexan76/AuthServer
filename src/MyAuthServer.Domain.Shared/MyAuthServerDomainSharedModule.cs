@@ -12,6 +12,7 @@ using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.Validation.Localization;
 using Volo.Abp.VirtualFileSystem;
+using Framework.BuildingBlock.Domain.Shared;
 
 namespace MyAuthServer;
 
@@ -19,8 +20,9 @@ namespace MyAuthServer;
     typeof(AbpAuditLoggingDomainSharedModule),
     typeof(AbpBackgroundJobsDomainSharedModule),
     typeof(AbpFeatureManagementDomainSharedModule),
-    typeof(AbpPermissionManagementDomainSharedModule),
+    //typeof(AbpPermissionManagementDomainSharedModule),
     typeof(AbpSettingManagementDomainSharedModule),
+    typeof(BuildingBlockDomainSharedModule),
     typeof(AbpIdentityDomainSharedModule),
     typeof(AbpOpenIddictDomainSharedModule),
     typeof(AbpTenantManagementDomainSharedModule)

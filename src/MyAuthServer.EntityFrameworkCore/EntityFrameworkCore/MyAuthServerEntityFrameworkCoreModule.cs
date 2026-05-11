@@ -1,7 +1,10 @@
+using Framework.BuildingBlock.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
+using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
+using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore.PostgreSql;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
@@ -17,11 +20,12 @@ namespace MyAuthServer.EntityFrameworkCore;
 
 [DependsOn(
     typeof(MyAuthServerDomainModule),
-    typeof(AbpPermissionManagementEntityFrameworkCoreModule),
+    //typeof(AbpPermissionManagementEntityFrameworkCoreModule),
     typeof(AbpSettingManagementEntityFrameworkCoreModule),
     typeof(AbpEntityFrameworkCorePostgreSqlModule),
     typeof(AbpBackgroundJobsEntityFrameworkCoreModule),
     typeof(AbpAuditLoggingEntityFrameworkCoreModule),
+    typeof(BuildingBlockEntityFrameworkCoreModule),
     typeof(AbpFeatureManagementEntityFrameworkCoreModule),
     typeof(AbpIdentityEntityFrameworkCoreModule),
     typeof(AbpOpenIddictEntityFrameworkCoreModule),
@@ -35,6 +39,14 @@ public class MyAuthServerEntityFrameworkCoreModule : AbpModule
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
         MyAuthServerEfCoreEntityExtensionMappings.Configure();
+
+        Configure<AbpDbConnectionOptions>(options =>
+        {
+            options.Databases.Configure("PermissonService", db =>
+            {
+                db.MappedConnections.Add("AbpPermissionManagement");
+            });
+        });
     }
 
     public override void ConfigureServices(ServiceConfigurationContext context)

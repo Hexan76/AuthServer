@@ -1,3 +1,4 @@
+using Framework.BuildingBlock.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MyAuthServer.MultiTenancy;
@@ -24,8 +25,9 @@ namespace MyAuthServer;
     typeof(AbpCachingModule),
     typeof(AbpBackgroundJobsDomainModule),
     typeof(AbpFeatureManagementDomainModule),
-    typeof(AbpPermissionManagementDomainIdentityModule),
-    typeof(AbpPermissionManagementDomainOpenIddictModule),
+    //typeof(AbpPermissionManagementDomainIdentityModule),
+    //typeof(AbpPermissionManagementDomainOpenIddictModule),
+    typeof(BuildingBlockDomainModule),
     typeof(AbpSettingManagementDomainModule),
     typeof(AbpEmailingModule),
     typeof(AbpIdentityDomainModule),

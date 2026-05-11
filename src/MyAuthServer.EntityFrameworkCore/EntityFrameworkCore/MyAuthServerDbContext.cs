@@ -67,7 +67,7 @@ public class MyAuthServerDbContext :
 
         /* Include modules to your migration db context */
 
-        builder.ConfigurePermissionManagement();
+        //builder.ConfigurePermissionManagement();
         builder.ConfigureSettingManagement();
         builder.ConfigureBackgroundJobs();
         builder.ConfigureAuditLogging();

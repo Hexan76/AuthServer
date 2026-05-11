@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyAuthServer.EntityFrameworkCore;
 using MyAuthServer.Web;
-using MyAuthServer.Web.Menus;
+//using MyAuthServer.Web.Menus;
 using Volo.Abp.AspNetCore.TestBase;
 using Volo.Abp.Modularity;
 using Volo.Abp.OpenIddict;
@@ -63,7 +63,7 @@ public class MyAuthServerWebTestModule : AbpModule
     {
         services.Configure<AbpNavigationOptions>(options =>
         {
-            options.MenuContributors.Add(new MyAuthServerMenuContributor());
+            //options.MenuContributors.Add(new MyAuthServerMenuContributor());
         });
     }
 }

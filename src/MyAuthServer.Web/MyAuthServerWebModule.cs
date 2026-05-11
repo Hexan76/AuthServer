@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
@@ -9,11 +12,23 @@ using MyAuthServer.EntityFrameworkCore;
 using MyAuthServer.Localization;
 using MyAuthServer.MultiTenancy;
 using MyAuthServer.Web.HealthChecks;
+using OpenIddict.Abstractions;
+using OpenIddict.Server.AspNetCore;
+using OpenIddict.Validation.AspNetCore;
+using System;
+using System.Collections.Generic;
+
+
+
 //using MyAuthServer.Web.Menus;
 using System.IO;
+using System.Net;
+using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Account;
 using Volo.Abp.AspNetCore.MultiTenancy;
 using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.AspNetCore.Mvc.Libs;
 using Volo.Abp.AspNetCore.Mvc.Localization;
 //using OpenIddict.Server.AspNetCore;
 //using OpenIddict.Validation.AspNetCore;
@@ -25,6 +40,7 @@ using Volo.Abp.AspNetCore.Mvc.Localization;
 using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.FeatureManagement;
+using Volo.Abp.Identity.AspNetCore;
 using Volo.Abp.Modularity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.OpenIddict;
@@ -46,7 +62,13 @@ namespace MyAuthServer.Web;
     typeof(AbpAutofacModule),
     typeof(AbpStudioClientAspNetCoreModule),
     typeof(AbpAspNetCoreMultiTenancyModule),
-    typeof(AbpSwashbuckleModule),
+    //typeof(AbpSwashbuckleModule),
+
+    typeof(AbpOpenIddictAspNetCoreModule),
+    typeof(AbpAccountHttpApiModule),
+    typeof(AbpIdentityAspNetCoreModule),
+    typeof(AbpAccountApplicationModule),
+
     typeof(AbpAspNetCoreSerilogModule)
 )]
 public class MyAuthServerWebModule : AbpModule
@@ -68,47 +90,113 @@ public class MyAuthServerWebModule : AbpModule
             );
         });
 
-        PreConfigure<OpenIddictBuilder>(builder =>
+        context.Services.AddAuthentication(options =>
         {
-            builder.AddServer(options =>
+            options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        })
+        .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+        {
+            options.LoginPath = "/account2/login";
+        })
+        .AddGitHub(gitOptions =>
+        {
+            gitOptions.ClientId = configuration["Authentication:Github:ClientId"];
+            gitOptions.ClientSecret = configuration["Authentication:Github:ClientSecret"];
+            gitOptions.CallbackPath = "/callback/login/github";
+        })
+        .AddGoogle(googleOptions =>
+        {
+            googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
+            googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+            googleOptions.CallbackPath = "/callback/login/github";
+
+            googleOptions.Events.OnRedirectToAuthorizationEndpoint = context =>
             {
-                // Endpoints (standard OIDC)
-                options.SetAuthorizationEndpointUris("/connect/authorize");
-                options.SetTokenEndpointUris("/connect/token");
-                options.SetUserInfoEndpointUris("/connect/userinfo");
+                context.Response.Redirect(context.RedirectUri + "&prompt=consent");
+                return Task.CompletedTask;
+            };
+        });
 
-                // === OAuth Flows (ONLY what Node.js needs) ===
-                options.AllowAuthorizationCodeFlow();   // SPA + web login
-                options.AllowRefreshTokenFlow();        // session persistence
-                options.AllowClientCredentialsFlow();   // backend services
+        // Add OpenIddict for client configuration
 
-                // 🔐 REQUIRED for SPA / Node.js frontend
-                options.RequireProofKeyForCodeExchange(); // PKCE
-
-
-                options.AddDevelopmentEncryptionCertificate()
-                       .AddDevelopmentSigningCertificate();
-                // Standard OIDC scopes
-                options.RegisterScopes(
-                    "openid",
-                    "profile",
-                    "email",
-                    "roles",
-                    "MyAuthServer"
-                );
-
-                // ASP.NET integration
-                options.UseAspNetCore()
-                    .EnableAuthorizationEndpointPassthrough()
-                    .EnableTokenEndpointPassthrough()
-                    .EnableUserInfoEndpointPassthrough();
+        context.Services.AddOpenIddict()
+            .AddClient(options =>
+            {
+                // Add GitHub authentication using values from the configuration
+                options.UseWebProviders()
+                    .AddGitHub(githubOptions =>
+                    {
+                        githubOptions.SetClientId(configuration["Authentication:Github:ClientId"])  // Get from appsettings
+                                     .SetClientSecret(configuration["Authentication:Github:ClientSecret"])  // Get from appsettings
+                                     .SetRedirectUri("https://localhost:44310/callback/login/github");  // Redirect URI
+                    })
+                    // Add Google authentication using values from the configuration
+                    .AddGoogle(googleOptions =>
+                    {
+                        googleOptions.SetClientId(configuration["Authentication:Google:ClientId"])  // Get from appsettings
+                                     .SetClientSecret(configuration["Authentication:Google:ClientSecret"])  // Get from appsettings
+                                     .SetRedirectUri("https://localhost:44310/Account2/Login?handler=ExternalLoginCallback");  // Redirect URI
+                    });
             });
 
-            builder.AddValidation(options =>
+
+        PreConfigure<OpenIddictBuilder>(builder =>
             {
-                options.AddAudiences("MyAuthServer");
-                options.UseLocalServer();
-                options.UseAspNetCore();
+                builder.AddServer(options =>
+                {
+                    // Endpoints (standard OIDC)
+                    options.SetAuthorizationEndpointUris("/connect/authorize");
+                    options.SetTokenEndpointUris("/connect/token");
+                    options.SetUserInfoEndpointUris("/connect/userinfo");
+
+                    // === OAuth Flows (ONLY what Node.js needs) ===
+                    options.AllowAuthorizationCodeFlow();   // SPA + web login
+                    options.AllowRefreshTokenFlow();        // session persistence
+                    options.AllowClientCredentialsFlow();   // backend services
+                    options.AllowImplicitFlow();
+                    // 🔐 REQUIRED for SPA / Node.js frontend
+                    options.RequireProofKeyForCodeExchange(); // PKCE
+
+
+                    options.AddDevelopmentEncryptionCertificate()
+                           .AddDevelopmentSigningCertificate();
+                    // Standard OIDC scopes
+                    options.RegisterScopes(
+                        "openid",
+                        "profile",
+                        "email",
+                        "roles",
+                        "MyAuthServer"
+                    );
+
+
+                    // ASP.NET integration
+                    options.UseAspNetCore()
+                        .EnableAuthorizationEndpointPassthrough()
+                        .EnableTokenEndpointPassthrough()
+                        .EnableUserInfoEndpointPassthrough();
+                });
+
+                builder.AddValidation(options =>
+                {
+                    options.AddAudiences("MyAuthServer");
+                    options.UseLocalServer();
+                    options.UseAspNetCore();
+                });
+            });
+
+        context.Services.AddCors(options =>
+        {
+            options.AddPolicy("SwaggerCors", policy =>
+            {
+                policy
+                    .WithOrigins("https://localhost:44310") // AuthServer
+                    .WithOrigins("https://localhost:44366") // PermissionService Swagger
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
             });
         });
 
@@ -126,6 +214,11 @@ public class MyAuthServerWebModule : AbpModule
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
 
+
+        Configure<AbpMvcLibsOptions>(options =>
+        {
+            options.CheckLibs = false;
+        });
         if (!configuration.GetValue<bool>("App:DisablePII"))
         {
             Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
@@ -165,7 +258,7 @@ public class MyAuthServerWebModule : AbpModule
 
         Configure<PermissionManagementOptions>(options =>
         {
-            options.IsDynamicPermissionStoreEnabled = true;
+            options.IsDynamicPermissionStoreEnabled = false;
         });
     }
 
@@ -201,7 +294,7 @@ public class MyAuthServerWebModule : AbpModule
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
     {
-        //context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
+        context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
         context.Services.Configure<AbpClaimsPrincipalFactoryOptions>(options =>
         {
             options.IsDynamicClaimsEnabled = true;
@@ -221,7 +314,7 @@ public class MyAuthServerWebModule : AbpModule
                 options.FileSets.ReplaceEmbeddedByPhysical<MyAuthServerApplicationContractsModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}MyAuthServer.Application.Contracts", Path.DirectorySeparatorChar)));
                 options.FileSets.ReplaceEmbeddedByPhysical<MyAuthServerApplicationModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}MyAuthServer.Application", Path.DirectorySeparatorChar)));
                 options.FileSets.ReplaceEmbeddedByPhysical<MyAuthServerHttpApiModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}..{0}src{0}MyAuthServer.HttpApi", Path.DirectorySeparatorChar)));
-                options.FileSets.ReplaceEmbeddedByPhysical<MyAuthServerWebModule>(hostingEnvironment.ContentRootPath);
+                //options.FileSets.ReplaceEmbeddedByPhysical<MyAuthServerWebModule>(hostingEnvironment.ContentRootPath);
             }
         });
     }
@@ -257,6 +350,29 @@ public class MyAuthServerWebModule : AbpModule
                 options.CustomSchemaIds(type => type.FullName);
             }
         );
+        services.AddSwaggerGen(c =>
+        {
+            c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.OAuth2,
+                Flows = new OpenApiOAuthFlows
+                {
+                    AuthorizationCode = new OpenApiOAuthFlow
+                    {
+                        AuthorizationUrl = new Uri("https://localhost:44310/connect/authorize"),
+                        TokenUrl = new Uri("https://localhost:44310/connect/token"),
+                        Scopes = new Dictionary<string, string>
+                        {
+                            { "MyAuthServer", "MyAuthServer API" }
+                        }
+                    }
+                }
+            });
+            c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference("oauth2", document)] = []
+            });
+        });
     }
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
@@ -281,11 +397,13 @@ public class MyAuthServerWebModule : AbpModule
 
         app.UseCorrelationId();
         app.UseRouting();
+        app.UseCors("SwaggerCors");
+
         app.MapAbpStaticAssets();
         app.UseAbpStudioLink();
         app.UseAbpSecurityHeaders();
         app.UseAuthentication();
-        //app.UseAbpOpenIddictValidation();
+        app.UseAbpOpenIddictValidation();
 
         if (MultiTenancyConsts.IsEnabled)
         {
@@ -296,9 +414,14 @@ public class MyAuthServerWebModule : AbpModule
         app.UseDynamicClaims();
         app.UseAuthorization();
         app.UseSwagger();
-        app.UseAbpSwaggerUI(options =>
+        app.UseSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "MyAuthServer API");
+            options.OAuthClientId("swagger");
+            options.OAuthClientSecret(null);
+            options.OAuthScopes("openid", "profile", "MyAuthServer");
+            options.OAuthUsePkce();
+
         });
         app.UseAuditing();
         app.UseAbpSerilogEnrichers();
