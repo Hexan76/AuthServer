@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 //using Volo.Abp.Account;
 using Volo.Abp.Modularity;
-using Volo.Abp.PermissionManagement;
+//using Volo.Abp.PermissionManagement;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.FeatureManagement;
@@ -12,7 +12,7 @@ namespace MyAuthServer;
 
 [DependsOn(
     typeof(MyAuthServerApplicationContractsModule),
-    typeof(AbpPermissionManagementHttpApiClientModule),
+    //typeof(AbpPermissionManagementHttpApiClientModule),
     typeof(AbpFeatureManagementHttpApiClientModule),
     //typeof(AbpAccountHttpApiClientModule),
     typeof(AbpIdentityHttpApiClientModule),

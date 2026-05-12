@@ -1,4 +1,4 @@
-﻿using Volo.Abp.PermissionManagement;
+﻿//using Volo.Abp.PermissionManagement;
 using Volo.Abp.SettingManagement;
 //using Volo.Abp.Account;
 using Volo.Abp.Identity;
@@ -14,7 +14,7 @@ namespace MyAuthServer;
 [DependsOn(
     typeof(MyAuthServerDomainModule),
     typeof(MyAuthServerApplicationContractsModule),
-    typeof(AbpPermissionManagementApplicationModule),
+    //typeof(AbpPermissionManagementApplicationModule),
     typeof(AbpFeatureManagementApplicationModule),
     typeof(AbpIdentityApplicationModule),
     //typeof(AbpAccountApplicationModule),

@@ -1,3 +1,4 @@
+using Framework.BuildingBlock.Domain.Shared;
 using PermissionService.Localization;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.BackgroundJobs;
@@ -13,6 +14,7 @@ namespace PermissionService;
 [DependsOn(
     typeof(AbpAuditLoggingDomainSharedModule),
     typeof(AbpBackgroundJobsDomainSharedModule),
+    typeof(BuildingBlockDomainSharedModule),
     typeof(AbpPermissionManagementDomainSharedModule)
     )]
 public class PermissionServiceDomainSharedModule : AbpModule

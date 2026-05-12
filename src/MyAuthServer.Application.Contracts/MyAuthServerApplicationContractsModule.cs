@@ -16,8 +16,8 @@ namespace MyAuthServer;
     typeof(AbpIdentityApplicationContractsModule),
     //typeof(AbpAccountApplicationContractsModule),
     typeof(AbpTenantManagementApplicationContractsModule),
-    typeof(BuildingBlockApplicationContractsModule),
-    typeof(AbpPermissionManagementApplicationContractsModule)
+    typeof(BuildingBlockApplicationContractsModule)//,
+    //typeof(AbpPermissionManagementApplicationContractsModule)
 )]
 public class MyAuthServerApplicationContractsModule : AbpModule
 {

@@ -1,3 +1,4 @@
+using Framework.BuildingBlock.Domain;
 using PermissionService.MultiTenancy;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.BackgroundJobs;
@@ -13,6 +14,7 @@ namespace PermissionService;
     typeof(PermissionServiceDomainSharedModule),
     typeof(AbpAuditLoggingDomainModule),
     typeof(AbpCachingModule),
+    typeof(BuildingBlockDomainModule),
     typeof(AbpBackgroundJobsDomainModule),
     typeof(AbpPermissionManagementDomainIdentityModule),
     typeof(AbpPermissionManagementDomainOpenIddictModule)

@@ -111,7 +111,8 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
                 scopes: commonScopes,
                 redirectUris: new List<string> 
                 { 
-                    $"{swaggerRootUrl}/swagger/oauth2-redirect.html" 
+                    $"{swaggerRootUrl}/swagger/oauth2-redirect.html" ,
+                    "https://localhost:44310/swagger/oauth2-redirect.html"
                 },
                 clientUri: swaggerRootUrl + "/swagger",
                 logoUri: "/images/clients/swagger.svg"
