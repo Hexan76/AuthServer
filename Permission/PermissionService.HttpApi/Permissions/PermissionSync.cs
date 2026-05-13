@@ -1,6 +1,7 @@
 ﻿using FastEndpoints;
 using Framework.BuildingBlock.Application.Contracts;
 using Framework.BuildingBlock.HttpApi;
+using Microsoft.AspNetCore.Http;
 
 namespace PermissionService.Permissions;
 
@@ -11,6 +12,7 @@ public class PermissionSync : BaseEndpoint<DefinitionPermissionsCreate, BaseResp
         Verbs(Http.POST);
         Routes("api/permission-management/sync");
         Tags(["Permission Management"]);
-        Options(["Permission Management"]);
+        Options(c => c.WithTags(["Permission Management"]));
+        AllowAnonymous();
     }
 }

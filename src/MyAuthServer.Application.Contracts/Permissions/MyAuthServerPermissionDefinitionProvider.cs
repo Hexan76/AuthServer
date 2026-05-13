@@ -1,22 +1,27 @@
-//using MyAuthServer.Localization;
-//using Volo.Abp.Authorization.Permissions;
-//using Volo.Abp.Localization;
-//using Volo.Abp.MultiTenancy;
+using Framework.BuildingBlock.Application.Contracts;
+using Framework.BuildingBlock.Permissions;
+using Framework.Security;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Volo.Abp.Data;
+using Volo.Abp.DependencyInjection;
 
-//namespace MyAuthServer.Permissions;
+namespace MyAuthServer
+{
+    [Dependency(ReplaceServices = true)]
+    public class MyAuthServerPermissionDataSeedContributor(IPermissionClient PermissionClient) : IDataSeedContributor, ITransientDependency
+    {
+        public async Task SeedAsync(DataSeedContext context)
+        {
+            var permissions = typeof(MyAuthServerApplicationContractsModule).Assembly.GetDefinitionPermissions(nameof(MyAuthServer));
 
-//public class MyAuthServerPermissionDefinitionProvider : PermissionDefinitionProvider
-//{
-//    public override void Define(IPermissionDefinitionContext context)
-//    {
-//        var myGroup = context.AddGroup(MyAuthServerPermissions.GroupName);
-
-//        //Define your own permissions here. Example:
-//        //myGroup.AddPermission(MyAuthServerPermissions.MyPermission1, L("Permission:MyPermission1"));
-//    }
-
-//    private static LocalizableString L(string name)
-//    {
-//        return LocalizableString.Create<MyAuthServerResource>(name);
-//    }
-//}
+            PermissionSyncSnapshot snapshot = new PermissionSyncSnapshot
+            {
+                ServiceName = "MyAuthServer",
+                Groups = permissions
+            };
+            string payload = JsonSerializer.Serialize(snapshot);
+            await PermissionClient.SyncDefinitions("MyAuthServer",payload , PermissionSignatureHelper.Sign(payload));
+        }
+    }
+}
