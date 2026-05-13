@@ -15,12 +15,12 @@ namespace PermissionService;
 [DependsOn(
    typeof(PermissionServiceApplicationContractsModule),
    typeof(AbpPermissionManagementHttpApiModule),
-   typeof(BuildingBlockHttpApiModule),
+   typeof(BuildingBlockHttpApiModule)
    //typeof(AbpSettingManagementHttpApiModule),
    //typeof(AbpFeatureManagementHttpApiModule),
    //typeof(AbpAccountHttpApiModule),
-   typeof(AbpIdentityHttpApiModule),
-   typeof(AbpTenantManagementHttpApiModule)
+   //typeof(AbpIdentityHttpApiModule),
+   //typeof(AbpTenantManagementHttpApiModule)
    )]
 public class PermissionServiceHttpApiModule : AbpModule
 {

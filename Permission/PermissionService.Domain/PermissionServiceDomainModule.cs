@@ -7,6 +7,7 @@ using Volo.Abp.Modularity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.PermissionManagement.Identity;
 using Volo.Abp.PermissionManagement.OpenIddict;
+using Volo.Abp.Security.Claims;
 
 namespace PermissionService;
 
@@ -16,7 +17,7 @@ namespace PermissionService;
     typeof(AbpCachingModule),
     typeof(BuildingBlockDomainModule),
     typeof(AbpBackgroundJobsDomainModule),
-    typeof(AbpPermissionManagementDomainIdentityModule),
+    //typeof(AbpPermissionManagementDomainIdentityModule),
     typeof(AbpPermissionManagementDomainOpenIddictModule)
     )]
 public class PermissionServiceDomainModule : AbpModule
@@ -27,6 +28,8 @@ public class PermissionServiceDomainModule : AbpModule
         {
             options.IsEnabled = MultiTenancyConsts.IsEnabled;
         });
+        AbpClaimTypes.UserId = "sub";
+        AbpClaimTypes.Role = "role";
 
     }
 }

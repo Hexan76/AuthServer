@@ -13,7 +13,7 @@ namespace PermissionService;
     typeof(PermissionServiceDomainSharedModule),
     //typeof(AbpFeatureManagementApplicationContractsModule),
     //typeof(AbpSettingManagementApplicationContractsModule),
-    typeof(AbpIdentityApplicationContractsModule),
+    //typeof(AbpIdentityApplicationContractsModule),
     typeof(BuildingBlockApplicationContractsModule),
     //typeof(AbpAccountApplicationContractsModule),
     typeof(AbpTenantManagementApplicationContractsModule),
