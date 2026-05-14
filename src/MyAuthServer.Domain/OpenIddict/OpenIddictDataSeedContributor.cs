@@ -106,12 +106,14 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
                 secret: null,
                 grantTypes: new List<string>
                 {
-                        OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange,
+                    OpenIddictConstants.GrantTypes.AuthorizationCode,
+                    OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange // 🔥 PKCE
                 },
                 scopes: commonScopes,
                 redirectUris: new List<string> 
                 { 
-                    $"{swaggerRootUrl}/swagger/oauth2-redirect.html" 
+                    $"{swaggerRootUrl}/swagger/oauth2-redirect.html" ,
+                    "https://localhost:44366/swagger/oauth2-redirect.html"
                 },
                 clientUri: swaggerRootUrl + "/swagger",
                 logoUri: "/images/clients/swagger.svg"

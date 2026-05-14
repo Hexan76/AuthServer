@@ -1,221 +1,238 @@
-﻿//using Microsoft.Extensions.Logging;
-//using Microsoft.Extensions.Logging.Abstractions;
-//using PermissionService.MultiTenancy;
-//using System;
-//using System.Collections.Generic;
-//using System.Diagnostics;
-//using System.IO;
-//using System.Linq;
-//using System.Runtime.InteropServices;
-//using System.Threading.Tasks;
-//using Volo.Abp.Data;
-//using Volo.Abp.DependencyInjection;
-//using Volo.Abp.MultiTenancy;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using PermissionService.MultiTenancy;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using Volo.Abp.Data;
+using Volo.Abp.DependencyInjection;
+using Volo.Abp.MultiTenancy;
 
-//namespace PermissionService.Data;
+namespace PermissionService.Data;
 
-//public class PermissionServiceDbMigrationService : ITransientDependency
-//{
-//    public ILogger<PermissionServiceDbMigrationService> Logger { get; set; }
+public class PermissionServiceDbMigrationService : ITransientDependency
+{
+    public ILogger<PermissionServiceDbMigrationService> Logger { get; set; }
 
-//    private readonly IDataSeeder _dataSeeder;
-//    private readonly IEnumerable<IPermissionServiceDbSchemaMigrator> _dbSchemaMigrators;
-//    private readonly ICurrentTenant _currentTenant;
+    private readonly IDataSeeder _dataSeeder;
+    private readonly IEnumerable<IPermissionServiceDbSchemaMigrator> _dbSchemaMigrators;
+    private readonly ICurrentTenant _currentTenant;
 
-//    public PermissionServiceDbMigrationService(
-//        IDataSeeder dataSeeder,
-//        ICurrentTenant currentTenant,
-//        IEnumerable<IPermissionServiceDbSchemaMigrator> dbSchemaMigrators)
-//    {
-//        _dataSeeder = dataSeeder;
-//        _currentTenant = currentTenant;
-//        _dbSchemaMigrators = dbSchemaMigrators;
+    public PermissionServiceDbMigrationService(
+        IDataSeeder dataSeeder,
+        ICurrentTenant currentTenant,
+        IEnumerable<IPermissionServiceDbSchemaMigrator> dbSchemaMigrators)
+    {
+        _dataSeeder = dataSeeder;
+        _currentTenant = currentTenant;
+        _dbSchemaMigrators = dbSchemaMigrators;
 
-//        Logger = NullLogger<PermissionServiceDbMigrationService>.Instance;
-//    }
+        Logger = NullLogger<PermissionServiceDbMigrationService>.Instance;
+    }
 
-//    public async Task MigrateAsync()
-//    {
-//        var initialMigrationAdded = AddInitialMigrationIfNotExist();
+    public async Task MigrateAsync()
+    {
+        var initialMigrationAdded = AddInitialMigrationIfNotExist();
 
-//        if (initialMigrationAdded)
-//        {
-//            return;
-//        }
+        if (initialMigrationAdded)
+        {
+            return;
+        }
 
-//        Logger.LogInformation("Started database migrations...");
+        Logger.LogInformation("Started database migrations...");
 
-//        await MigrateDatabaseSchemaAsync();
-//        await SeedDataAsync();
+        await MigrateDatabaseSchemaAsync();
+        await SeedDataAsync();
 
-//        Logger.LogInformation($"Successfully completed host database migrations.");
+        Logger.LogInformation($"Successfully completed host database migrations.");
 
-//        if (MultiTenancyConsts.IsEnabled)
-//        {
+        //if (MultiTenancyConsts.IsEnabled)
+        //{
 
-//            var tenants = await _tenantRepository.GetListAsync(includeDetails: true);
+        //    var tenants = await _tenantRepository.GetListAsync(includeDetails: true);
 
-//            var migratedDatabaseSchemas = new HashSet<string>();
-//            foreach (var tenant in tenants)
-//            {
-//                using (_currentTenant.Change(tenant.Id))
-//                {
-//                    if (tenant.ConnectionStrings.Any())
-//                    {
-//                        var tenantConnectionStrings = tenant.ConnectionStrings
-//                            .Select(x => x.Value)
-//                            .ToList();
+        //    var migratedDatabaseSchemas = new HashSet<string>();
+        //    foreach (var tenant in tenants)
+        //    {
+        //        using (_currentTenant.Change(tenant.Id))
+        //        {
+        //            if (tenant.ConnectionStrings.Any())
+        //            {
+        //                var tenantConnectionStrings = tenant.ConnectionStrings
+        //                    .Select(x => x.Value)
+        //                    .ToList();
 
-//                        if (!migratedDatabaseSchemas.IsSupersetOf(tenantConnectionStrings))
-//                        {
-//                            await MigrateDatabaseSchemaAsync(tenant);
+        //                if (!migratedDatabaseSchemas.IsSupersetOf(tenantConnectionStrings))
+        //                {
+        //                    await MigrateDatabaseSchemaAsync(tenant);
 
-//                            migratedDatabaseSchemas.AddIfNotContains(tenantConnectionStrings);
-//                        }
-//                    }
+        //                    migratedDatabaseSchemas.AddIfNotContains(tenantConnectionStrings);
+        //                }
+        //            }
 
-//                    await SeedDataAsync(tenant);
-//                }
+        //            await SeedDataAsync(tenant);
+        //        }
 
-//                Logger.LogInformation($"Successfully completed {tenant.Name} tenant database migrations.");
-//            }
+        //        Logger.LogInformation($"Successfully completed {tenant.Name} tenant database migrations.");
+        //    }
 
-//            Logger.LogInformation("Successfully completed all database migrations.");
-//        }
-//        Logger.LogInformation("You can safely end this process...");
-//    }
+        //    Logger.LogInformation("Successfully completed all database migrations.");
+        //}
+        //Logger.LogInformation("You can safely end this process...");
+    }
 
-//    private async Task MigrateDatabaseSchemaAsync(Tenant? tenant = null)
-//    {
-//        Logger.LogInformation(
-//            $"Migrating schema for {(tenant == null ? "host" : tenant.Name + " tenant")} database...");
+    //private async Task MigrateDatabaseSchemaAsync(Tenant? tenant = null)
+    //{
+    //    Logger.LogInformation(
+    //        $"Migrating schema for {(tenant == null ? "host" : tenant.Name + " tenant")} database...");
 
-//        foreach (var migrator in _dbSchemaMigrators)
-//        {
-//            await migrator.MigrateAsync();
-//        }
-//    }
+    //    foreach (var migrator in _dbSchemaMigrators)
+    //    {
+    //        await migrator.MigrateAsync();
+    //    }
+    //}
+    private async Task MigrateDatabaseSchemaAsync()
+    {
+        //Logger.LogInformation(
+        //    $"Migrating schema for {(tenant == null ? "host" : tenant.Name + " tenant")} database...");
 
-//    private async Task SeedDataAsync(Tenant? tenant = null)
-//    {
-//        Logger.LogInformation($"Executing {(tenant == null ? "host" : tenant.Name + " tenant")} database seed...");
+        foreach (var migrator in _dbSchemaMigrators)
+        {
+            await migrator.MigrateAsync();
+        }
+    }
 
-//        await _dataSeeder.SeedAsync(new DataSeedContext(tenant?.Id)
-//            .WithProperty(IdentityDataSeedContributor.AdminEmailPropertyName,
-//                PermissionServiceConsts.AdminEmailDefaultValue)
-//            .WithProperty(IdentityDataSeedContributor.AdminPasswordPropertyName,
-//                PermissionServiceConsts.AdminPasswordDefaultValue)
-//        );
-//    }
+    //private async Task SeedDataAsync(Tenant? tenant = null)
+    //{
+    //    Logger.LogInformation($"Executing {(tenant == null ? "host" : tenant.Name + " tenant")} database seed...");
 
-//    private bool AddInitialMigrationIfNotExist()
-//    {
-//        try
-//        {
-//            if (!DbMigrationsProjectExists())
-//            {
-//                return false;
-//            }
-//        }
-//        catch (Exception)
-//        {
-//            return false;
-//        }
+    //    await _dataSeeder.SeedAsync(new DataSeedContext(tenant?.Id)
+    //        .WithProperty(IdentityDataSeedContributor.AdminEmailPropertyName,
+    //            PermissionServiceConsts.AdminEmailDefaultValue)
+    //        .WithProperty(IdentityDataSeedContributor.AdminPasswordPropertyName,
+    //            PermissionServiceConsts.AdminPasswordDefaultValue)
+    //    );
+    //}
+    private async Task SeedDataAsync()
+    {
+        //Logger.LogInformation($"Executing {(tenant == null ? "host" : tenant.Name + " tenant")} database seed...");
 
-//        try
-//        {
-//            if (!MigrationsFolderExists())
-//            {
-//                AddInitialMigration();
-//                return true;
-//            }
-//            else
-//            {
-//                return false;
-//            }
-//        }
-//        catch (Exception e)
-//        {
-//            Logger.LogWarning("Couldn't determinate if any migrations exist : " + e.Message);
-//            return false;
-//        }
-//    }
+        await _dataSeeder.SeedAsync(new DataSeedContext()
+        );
+    }
 
-//    private bool DbMigrationsProjectExists()
-//    {
-//        var dbMigrationsProjectFolder = GetEntityFrameworkCoreProjectFolderPath();
+    private bool AddInitialMigrationIfNotExist()
+    {
+        try
+        {
+            if (!DbMigrationsProjectExists())
+            {
+                return false;
+            }
+        }
+        catch (Exception)
+        {
+            return false;
+        }
 
-//        return dbMigrationsProjectFolder != null;
-//    }
+        try
+        {
+            if (!MigrationsFolderExists())
+            {
+                AddInitialMigration();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.LogWarning("Couldn't determinate if any migrations exist : " + e.Message);
+            return false;
+        }
+    }
 
-//    private bool MigrationsFolderExists()
-//    {
-//        var dbMigrationsProjectFolder = GetEntityFrameworkCoreProjectFolderPath();
+    private bool DbMigrationsProjectExists()
+    {
+        var dbMigrationsProjectFolder = GetEntityFrameworkCoreProjectFolderPath();
 
-//        return dbMigrationsProjectFolder != null && Directory.Exists(Path.Combine(dbMigrationsProjectFolder, "Migrations"));
-//    }
+        return dbMigrationsProjectFolder != null;
+    }
 
-//    private void AddInitialMigration()
-//    {
-//        Logger.LogInformation("Creating initial migration...");
+    private bool MigrationsFolderExists()
+    {
+        var dbMigrationsProjectFolder = GetEntityFrameworkCoreProjectFolderPath();
 
-//        string argumentPrefix;
-//        string fileName;
+        return dbMigrationsProjectFolder != null && Directory.Exists(Path.Combine(dbMigrationsProjectFolder, "Migrations"));
+    }
 
-//        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-//        {
-//            argumentPrefix = "-c";
-//            fileName = "/bin/bash";
-//        }
-//        else
-//        {
-//            argumentPrefix = "/C";
-//            fileName = "cmd.exe";
-//        }
+    private void AddInitialMigration()
+    {
+        Logger.LogInformation("Creating initial migration...");
 
-//        var procStartInfo = new ProcessStartInfo(fileName,
-//            $"{argumentPrefix} \"abp create-migration-and-run-migrator \"{GetEntityFrameworkCoreProjectFolderPath()}\"\""
-//        );
+        string argumentPrefix;
+        string fileName;
 
-//        try
-//        {
-//            Process.Start(procStartInfo);
-//        }
-//        catch (Exception)
-//        {
-//            throw new Exception("Couldn't run ABP CLI...");
-//        }
-//    }
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            argumentPrefix = "-c";
+            fileName = "/bin/bash";
+        }
+        else
+        {
+            argumentPrefix = "/C";
+            fileName = "cmd.exe";
+        }
 
-//    private string? GetEntityFrameworkCoreProjectFolderPath()
-//    {
-//        var slnDirectoryPath = GetSolutionDirectoryPath();
+        var procStartInfo = new ProcessStartInfo(fileName,
+            $"{argumentPrefix} \"abp create-migration-and-run-migrator \"{GetEntityFrameworkCoreProjectFolderPath()}\"\""
+        );
 
-//        if (slnDirectoryPath == null)
-//        {
-//            throw new Exception("Solution folder not found!");
-//        }
+        try
+        {
+            Process.Start(procStartInfo);
+        }
+        catch (Exception)
+        {
+            throw new Exception("Couldn't run ABP CLI...");
+        }
+    }
 
-//        var srcDirectoryPath = Path.Combine(slnDirectoryPath, "src");
+    private string? GetEntityFrameworkCoreProjectFolderPath()
+    {
+        var slnDirectoryPath = GetSolutionDirectoryPath();
 
-//        return Directory.GetDirectories(srcDirectoryPath)
-//            .FirstOrDefault(d => d.EndsWith(".EntityFrameworkCore"));
-//    }
+        if (slnDirectoryPath == null)
+        {
+            throw new Exception("Solution folder not found!");
+        }
 
-//    private string? GetSolutionDirectoryPath()
-//    {
-//        var currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
+        var srcDirectoryPath = Path.Combine(slnDirectoryPath, "src");
 
-//        while (currentDirectory != null && Directory.GetParent(currentDirectory.FullName) != null)
-//        {
-//            currentDirectory = Directory.GetParent(currentDirectory.FullName);
+        return Directory.GetDirectories(srcDirectoryPath)
+            .FirstOrDefault(d => d.EndsWith(".EntityFrameworkCore"));
+    }
 
-//            if (currentDirectory != null && Directory.GetFiles(currentDirectory.FullName).FirstOrDefault(f => f.EndsWith(".sln") || f.EndsWith(".slnx")) != null)
-//            {
-//                return currentDirectory.FullName;
-//            }
-//        }
+    private string? GetSolutionDirectoryPath()
+    {
+        var currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
 
-//        return null;
-//    }
-//}
+        while (currentDirectory != null && Directory.GetParent(currentDirectory.FullName) != null)
+        {
+            currentDirectory = Directory.GetParent(currentDirectory.FullName);
+
+            if (currentDirectory != null && Directory.GetFiles(currentDirectory.FullName).FirstOrDefault(f => f.EndsWith(".sln") || f.EndsWith(".slnx")) != null)
+            {
+                return currentDirectory.FullName;
+            }
+        }
+
+        return null;
+    }
+}

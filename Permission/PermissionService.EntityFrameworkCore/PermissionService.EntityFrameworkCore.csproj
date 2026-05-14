@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\building-block\src\Framework.BuildingBlock.EntityFrameworkCore\Framework.BuildingBlock.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\PermissionService.Domain\PermissionService.Domain.csproj" />
   </ItemGroup>
 

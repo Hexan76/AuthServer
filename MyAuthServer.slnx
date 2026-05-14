@@ -20,6 +20,7 @@
     <Folder Name="/Permission/">
         <Project Path="Permission/PermissionService.Application.Contracts/PermissionService.Application.Contracts.csproj" />
         <Project Path="Permission/PermissionService.Application/PermissionService.Application.csproj" />
+        <Project Path="Permission/PermissionService.DbMigrator/PermissionService.DbMigrator.csproj" />
         <Project Path="Permission/PermissionService.Domain.Shared/PermissionService.Domain.Shared.csproj" />
         <Project Path="Permission/PermissionService.Domain/PermissionService.Domain.csproj" />
         <Project Path="Permission/PermissionService.EntityFrameworkCore/PermissionService.EntityFrameworkCore.csproj" />
@@ -45,4 +46,6 @@
         <Project Path="test/MyAuthServer.TestBase/MyAuthServer.TestBase.csproj" />
         <Project Path="test/MyAuthServer.Web.Tests/MyAuthServer.Web.Tests.csproj" />
     </Folder>
+    <Project Path="../building-block/Framework.Security.Abstraction/Framework.Security.Abstraction.csproj" />
+    <Project Path="../building-block/Framework.Security/Framework.Security.csproj" />
 </Solution>

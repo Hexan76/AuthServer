@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\building-block\src\Framework.BuildingBlock.Application.Contracts\Framework.BuildingBlock.Application.Contracts.csproj" />
     <ProjectReference Include="..\PermissionService.Domain.Shared\PermissionService.Domain.Shared.csproj" />
   </ItemGroup>
   

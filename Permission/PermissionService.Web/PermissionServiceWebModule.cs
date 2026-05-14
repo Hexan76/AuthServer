@@ -1,14 +1,17 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using FastEndpoints;
+using FastEndpoints.Swagger;
+using MassTransit;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi;
-//using Microsoft.OpenApi.Models;
-using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
+
+//using Microsoft.OpenApi.Models;
 //using OpenIddict.Validation.AspNetCore;
 using PermissionService.EntityFrameworkCore;
 using PermissionService.Localization;
@@ -24,7 +27,6 @@ using Volo.Abp.Autofac;
 using Volo.Abp.Modularity;
 using Volo.Abp.PermissionManagement;
 using Volo.Abp.Security.Claims;
-using Volo.Abp.Swashbuckle;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
 
@@ -65,15 +67,31 @@ public class PermissionServiceWebModule : AbpModule
             Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
         }
 
+
+        context.Services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssemblyContaining<PermissionServiceApplicationModule>();
+        });
+
+        context.Services.AddFastEndpoints()
+                        .SwaggerDocument();
         // =========================
         // AUTH CONFIG (IMPORTANT FIX)
         // =========================
-        context.Services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        });
+
+        //TODO:Should We page for Scheme? 
+        context.Services
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme =
+                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+
+                options.DefaultChallengeScheme =
+                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+
+                options.DefaultForbidScheme =
+                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+            });
 
         context.Services.AddOpenIddict()
             .AddValidation(options =>
@@ -222,7 +240,7 @@ public class PermissionServiceWebModule : AbpModule
         app.UseUnitOfWork();
         app.UseDynamicClaims();
         app.UseAuthorization();
-
+        app.UseFastEndpoints();
         app.UseSwagger();
         app.UseSwaggerUI(options =>
         {

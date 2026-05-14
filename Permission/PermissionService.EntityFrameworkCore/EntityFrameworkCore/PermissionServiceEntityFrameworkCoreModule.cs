@@ -1,3 +1,4 @@
+using Framework.BuildingBlock.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -14,6 +15,7 @@ namespace PermissionService.EntityFrameworkCore;
     typeof(PermissionServiceDomainModule),
     typeof(AbpPermissionManagementEntityFrameworkCoreModule),
     typeof(AbpEntityFrameworkCorePostgreSqlModule),
+    typeof(BuildingBlockEntityFrameworkCoreModule),
     typeof(AbpBackgroundJobsEntityFrameworkCoreModule),
     typeof(AbpAuditLoggingEntityFrameworkCoreModule)
     )]

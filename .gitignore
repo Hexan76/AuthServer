@@ -272,3 +272,4 @@ src/MyAuthServer.Blazor.Server.Tiered/Logs/*
 # IdentityServer temp files
 tempkey.rsa
 tempkey.jwk
+/Permission/PermissionService.Web/Logs

@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\building-block\src\Framework.BuildingBlock.HttpApi\Framework.BuildingBlock.HttpApi.csproj" />
     <ProjectReference Include="..\PermissionService.Application.Contracts\PermissionService.Application.Contracts.csproj" />
   </ItemGroup>
 

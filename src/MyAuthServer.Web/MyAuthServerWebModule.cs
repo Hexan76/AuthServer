@@ -49,8 +49,8 @@ using Volo.Abp.Security.Claims;
 using Volo.Abp.Studio;
 using Volo.Abp.Studio.Client.AspNetCore;
 using Volo.Abp.Swashbuckle;
-using Volo.Abp.UI.Navigation;
-using Volo.Abp.UI.Navigation.Urls;
+//using Volo.Abp.UI.Navigation;
+//using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
 
 namespace MyAuthServer.Web;
@@ -219,6 +219,7 @@ public class MyAuthServerWebModule : AbpModule
         {
             options.CheckLibs = false;
         });
+
         if (!configuration.GetValue<bool>("App:DisablePII"))
         {
             Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
@@ -286,10 +287,10 @@ public class MyAuthServerWebModule : AbpModule
 
     private void ConfigureUrls(IConfiguration configuration)
     {
-        Configure<AppUrlOptions>(options =>
-        {
-            options.Applications["MVC"].RootUrl = configuration["App:SelfUrl"];
-        });
+        //Configure<AppUrlOptions>(options =>
+        //{
+        //    options.Applications["MVC"].RootUrl = configuration["App:SelfUrl"];
+        //});
     }
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
