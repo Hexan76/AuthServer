@@ -5,6 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.DependencyInjection;
+using Volo.Abp.Guids;
+using Volo.Abp.Identity;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.PermissionManagement;
+using Volo.Abp.PermissionManagement.Identity;
 using Volo.Abp.Security.Claims;
 
 namespace PermissionService;
@@ -25,6 +30,7 @@ public class MyPermissionValueProviderManager : PermissionValueProviderManager
 [Dependency(ReplaceServices = true)]
 public class MyUserPermissionValueProvider : UserPermissionValueProvider
 {
+    public override string Name => "U";
     public MyUserPermissionValueProvider(IPermissionStore permissionStore) : base(permissionStore)
     {
     }
@@ -42,5 +48,59 @@ public class MyUserPermissionValueProvider : UserPermissionValueProvider
     public override Task<MultiplePermissionGrantResult> CheckAsync(PermissionValuesCheckContext context)
     {
         return base.CheckAsync(context);
+    }
+}
+
+public class MyPermissionManagementProvider : UserPermissionManagementProvider , IPermissionManagementProvider 
+{
+    public MyPermissionManagementProvider(IPermissionGrantRepository permissionGrantRepository, IGuidGenerator guidGenerator, ICurrentTenant currentTenant) : base(permissionGrantRepository, guidGenerator, currentTenant)
+    {
+    }
+
+    public override Task<PermissionValueProviderGrantInfo> CheckAsync(string name, string providerName, string providerKey)
+    {
+        return base.CheckAsync(name, providerName, providerKey);
+    }
+
+    public override Task<MultiplePermissionValueProviderGrantInfo> CheckAsync(string[] names, string providerName, string providerKey)
+    {
+        return base.CheckAsync(names, providerName, providerKey);
+    }
+
+    protected override Task GrantAsync(string name, string providerKey)
+    {
+        return base.GrantAsync(name, providerKey);
+    }
+
+    public override Task SetAsync(string name, string providerKey, bool isGranted)
+    {
+        return base.SetAsync(name, providerKey, isGranted);
+    }
+}
+
+public class MyRolePermissionManagement : RolePermissionManagementProvider, IPermissionManagementProvider
+{
+    public MyRolePermissionManagement(IPermissionGrantRepository permissionGrantRepository, IGuidGenerator guidGenerator, ICurrentTenant currentTenant, IUserRoleFinder userRoleFinder) : base(permissionGrantRepository, guidGenerator, currentTenant, userRoleFinder)
+    {
+    }
+
+    public override Task<PermissionValueProviderGrantInfo> CheckAsync(string name, string providerName, string providerKey)
+    {
+        return base.CheckAsync(name, providerName, providerKey);
+    }
+
+    public override Task<MultiplePermissionValueProviderGrantInfo> CheckAsync(string[] names, string providerName, string providerKey)
+    {
+        return base.CheckAsync(names, providerName, providerKey);
+    }
+
+    protected override Task GrantAsync(string name, string providerKey)
+    {
+        return base.GrantAsync(name, providerKey);
+    }
+
+    public override Task SetAsync(string name, string providerKey, bool isGranted)
+    {
+        return base.SetAsync(name, providerKey, isGranted);
     }
 }

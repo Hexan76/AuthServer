@@ -27,11 +27,12 @@ public class PermissionServiceApplicationModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        Configure<AbpPermissionOptions>(options =>
+        Configure<PermissionManagementOptions>(options =>
         {
-            // ❌ این خط Client provider را حذف می‌کند
-            options.ValueProviders.Remove(typeof(ClientPermissionValueProvider));
-            options.ValueProviders.Remove(typeof(RolePermissionManagementProvider));
+            options.ManagementProviders.Add(typeof(MyPermissionManagementProvider));
+            options.ProviderPolicies[UserPermissionValueProvider.ProviderName] = "AbpIdentity.Users.ManagePermissions";
+            options.ProviderPolicies[RolePermissionValueProvider.ProviderName] = "AbpIdentity.Roles.ManagePermissions";
+
         });
 
         //Configure<AbpPermissionOptions>(options =>
