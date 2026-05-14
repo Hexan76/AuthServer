@@ -141,35 +141,42 @@ public class MyAuthServerWebModule : AbpModule
                     });
             });
 
-
         PreConfigure<OpenIddictBuilder>(builder =>
             {
                 builder.AddServer(options =>
                 {
-                    // Endpoints (standard OIDC)
                     options.SetAuthorizationEndpointUris("/connect/authorize");
                     options.SetTokenEndpointUris("/connect/token");
                     options.SetUserInfoEndpointUris("/connect/userinfo");
+                    options.SetAccessTokenLifetime(TimeSpan.FromMinutes(1));
+                    options
+                        .AllowAuthorizationCodeFlow()
+                        .AllowHybridFlow()
+                        .AllowImplicitFlow()
+                        .AllowPasswordFlow()
+                        .AllowClientCredentialsFlow()
+                        .AllowRefreshTokenFlow()
+                        .AllowDeviceAuthorizationFlow()
+                        .AllowNoneFlow()
+                        .AllowTokenExchangeFlow();
 
-                    // === OAuth Flows (ONLY what Node.js needs) ===
-                    options.AllowAuthorizationCodeFlow();   // SPA + web login
-                    options.AllowRefreshTokenFlow();        // session persistence
-                    options.AllowClientCredentialsFlow();   // backend services
-                    options.AllowImplicitFlow();
-                    // 🔐 REQUIRED for SPA / Node.js frontend
-                    options.RequireProofKeyForCodeExchange(); // PKCE
+                    options.RequireProofKeyForCodeExchange(); 
 
 
                     options.AddDevelopmentEncryptionCertificate()
                            .AddDevelopmentSigningCertificate();
                     // Standard OIDC scopes
-                    options.RegisterScopes(
-                        "openid",
-                        "profile",
-                        "email",
-                        "roles",
-                        "MyAuthServer"
-                    );
+                    options.RegisterScopes(new[]
+                           {
+                                OpenIddictConstants.Scopes.OpenId,
+                                OpenIddictConstants.Scopes.Email,
+                                OpenIddictConstants.Scopes.Profile,
+                                OpenIddictConstants.Scopes.Phone,
+                                OpenIddictConstants.Scopes.Roles,
+                                OpenIddictConstants.Scopes.Address,
+                                OpenIddictConstants.Scopes.OfflineAccess,
+                                "MyAuthServer"
+                           });
 
 
                     // ASP.NET integration
@@ -364,8 +371,10 @@ public class MyAuthServerWebModule : AbpModule
                         TokenUrl = new Uri("https://localhost:44310/connect/token"),
                         Scopes = new Dictionary<string, string>
                         {
-                            { "MyAuthServer", "MyAuthServer API" }
-                        }
+                            { "openid", "OpenId" },
+                            { "profile", "Profile" },
+                            { "offline_access", "Refresh token access" },
+                            { "MyAuthServer", "Main API" }                        }
                     }
                 }
             });
@@ -420,7 +429,7 @@ public class MyAuthServerWebModule : AbpModule
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "MyAuthServer API");
             options.OAuthClientId("swagger");
             options.OAuthClientSecret(null);
-            options.OAuthScopes("openid", "profile", "MyAuthServer");
+            options.OAuthScopes("MyAuthServer");
             options.OAuthUsePkce();
 
         });
