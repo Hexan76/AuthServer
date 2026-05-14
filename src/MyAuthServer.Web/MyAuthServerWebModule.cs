@@ -148,7 +148,8 @@ public class MyAuthServerWebModule : AbpModule
                     options.SetAuthorizationEndpointUris("/connect/authorize");
                     options.SetTokenEndpointUris("/connect/token");
                     options.SetUserInfoEndpointUris("/connect/userinfo");
-                    options.SetAccessTokenLifetime(TimeSpan.FromMinutes(1));
+                    options.SetAccessTokenLifetime(TimeSpan.FromMinutes(15));
+                    options.SetRefreshTokenLifetime(TimeSpan.FromDays(7));
                     options
                         .AllowAuthorizationCodeFlow()
                         .AllowHybridFlow()
@@ -160,8 +161,8 @@ public class MyAuthServerWebModule : AbpModule
                         .AllowNoneFlow()
                         .AllowTokenExchangeFlow();
 
-                    options.RequireProofKeyForCodeExchange(); 
-
+                    options.RequireProofKeyForCodeExchange();
+                    options.DisableAccessTokenEncryption();
 
                     options.AddDevelopmentEncryptionCertificate()
                            .AddDevelopmentSigningCertificate();
