@@ -78,6 +78,8 @@ public class PermissionServiceWebModule : AbpModule
         // =========================
         // AUTH CONFIG (IMPORTANT FIX)
         // =========================
+
+        //TODO:Should We page for Scheme? 
         context.Services
             .AddAuthentication(options =>
             {

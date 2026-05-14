@@ -52,10 +52,19 @@ public class MyUserPermissionValueProvider : UserPermissionValueProvider
         return base.CheckAsync(context);
     }
 }
+//TODO: Need To CustomHandle?
 
-public class MyPermissionManagementProvider : UserPermissionManagementProvider 
+/// <summary>
+/// Provides a custom implementation of a permission management provider that determines and manages permission grants
+/// for users based on the specified provider and key.
+/// </summary>
+/// <remarks>This class extends UserPermissionManagementProvider to support permission checks and grant management
+/// for user-based scenarios. It enables checking single or multiple permissions and setting or granting permissions for
+/// a given provider key. Use this provider when you need to manage user permissions with custom logic or repository
+/// integration.</remarks>
+public class MyUserPermissionManagementProvider : UserPermissionManagementProvider 
 {
-    public MyPermissionManagementProvider(IPermissionGrantRepository permissionGrantRepository, IGuidGenerator guidGenerator, ICurrentTenant currentTenant) : base(permissionGrantRepository, guidGenerator, currentTenant)
+    public MyUserPermissionManagementProvider(IPermissionGrantRepository permissionGrantRepository, IGuidGenerator guidGenerator, ICurrentTenant currentTenant) : base(permissionGrantRepository, guidGenerator, currentTenant)
     {
     }
 

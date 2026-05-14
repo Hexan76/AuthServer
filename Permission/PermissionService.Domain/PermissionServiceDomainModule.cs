@@ -17,6 +17,7 @@ namespace PermissionService;
     typeof(AbpCachingModule),
     typeof(BuildingBlockDomainModule),
     typeof(AbpBackgroundJobsDomainModule),
+    //TODO: how to handle IdentityProvider without Remote
     //typeof(AbpPermissionManagementDomainIdentityModule),
     typeof(AbpPermissionManagementDomainOpenIddictModule)
     )]
@@ -28,6 +29,8 @@ public class PermissionServiceDomainModule : AbpModule
         {
             options.IsEnabled = MultiTenancyConsts.IsEnabled;
         });
+
+        //TODO: Where can i put these config? Can be Configurable
         AbpClaimTypes.UserId = "sub";
         AbpClaimTypes.Role = "role";
 
