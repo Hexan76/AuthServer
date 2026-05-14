@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.DependencyInjection;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
 using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
@@ -51,7 +53,7 @@ public class MyUserPermissionValueProvider : UserPermissionValueProvider
     }
 }
 
-public class MyPermissionManagementProvider : UserPermissionManagementProvider , IPermissionManagementProvider 
+public class MyPermissionManagementProvider : UserPermissionManagementProvider 
 {
     public MyPermissionManagementProvider(IPermissionGrantRepository permissionGrantRepository, IGuidGenerator guidGenerator, ICurrentTenant currentTenant) : base(permissionGrantRepository, guidGenerator, currentTenant)
     {
@@ -62,9 +64,25 @@ public class MyPermissionManagementProvider : UserPermissionManagementProvider ,
         return base.CheckAsync(name, providerName, providerKey);
     }
 
-    public override Task<MultiplePermissionValueProviderGrantInfo> CheckAsync(string[] names, string providerName, string providerKey)
+    public override async Task<MultiplePermissionValueProviderGrantInfo> CheckAsync(string[] names, string providerName, string providerKey)
     {
-        return base.CheckAsync(names, providerName, providerKey);
+        //return await base.CheckAsync(names, providerName, providerKey);
+        using (PermissionGrantRepository.DisableTracking())
+        {
+            MultiplePermissionValueProviderGrantInfo multiplePermissionValueProviderGrantInfo = new MultiplePermissionValueProviderGrantInfo(names);
+            if (providerName != Name)
+            {
+                return multiplePermissionValueProviderGrantInfo;
+            }
+            List<PermissionGrant> source = await PermissionGrantRepository.GetListAsync(names, providerName, providerKey).ConfigureAwait(continueOnCapturedContext: false);
+            foreach (string permissionName in names)
+            {
+                bool isGranted = source.Any((PermissionGrant x) => x.Name == permissionName);
+                multiplePermissionValueProviderGrantInfo.Result[permissionName] = new PermissionValueProviderGrantInfo(isGranted, providerKey);
+            }
+            return multiplePermissionValueProviderGrantInfo;
+        }
+
     }
 
     protected override Task GrantAsync(string name, string providerKey)
@@ -78,11 +96,13 @@ public class MyPermissionManagementProvider : UserPermissionManagementProvider ,
     }
 }
 
-public class MyRolePermissionManagement : RolePermissionManagementProvider, IPermissionManagementProvider
+public class MyRolePermissionManagement : PermissionManagementProvider
 {
-    public MyRolePermissionManagement(IPermissionGrantRepository permissionGrantRepository, IGuidGenerator guidGenerator, ICurrentTenant currentTenant, IUserRoleFinder userRoleFinder) : base(permissionGrantRepository, guidGenerator, currentTenant, userRoleFinder)
+    public override string Name => "R";
+    public MyRolePermissionManagement(IPermissionGrantRepository permissionGrantRepository, IGuidGenerator guidGenerator, ICurrentTenant currentTenant) : base(permissionGrantRepository, guidGenerator, currentTenant)
     {
     }
+
 
     public override Task<PermissionValueProviderGrantInfo> CheckAsync(string name, string providerName, string providerKey)
     {

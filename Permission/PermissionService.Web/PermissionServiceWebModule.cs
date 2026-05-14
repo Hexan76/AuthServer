@@ -2,12 +2,15 @@
 using FastEndpoints.Swagger;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi;
+using OpenIddict.Validation.AspNetCore;
+
 //using Microsoft.OpenApi.Models;
 //using OpenIddict.Validation.AspNetCore;
 using PermissionService.EntityFrameworkCore;
@@ -75,12 +78,18 @@ public class PermissionServiceWebModule : AbpModule
         // =========================
         // AUTH CONFIG (IMPORTANT FIX)
         // =========================
-        context.Services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        });
+        context.Services
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme =
+                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+
+                options.DefaultChallengeScheme =
+                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+
+                options.DefaultForbidScheme =
+                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+            });
 
         context.Services.AddOpenIddict()
             .AddValidation(options =>

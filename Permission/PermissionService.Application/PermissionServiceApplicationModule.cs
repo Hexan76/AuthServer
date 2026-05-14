@@ -30,6 +30,7 @@ public class PermissionServiceApplicationModule : AbpModule
         Configure<PermissionManagementOptions>(options =>
         {
             options.ManagementProviders.Add(typeof(MyPermissionManagementProvider));
+            options.ManagementProviders.Add(typeof(MyRolePermissionManagement));
             options.ProviderPolicies[UserPermissionValueProvider.ProviderName] = "AbpIdentity.Users.ManagePermissions";
             options.ProviderPolicies[RolePermissionValueProvider.ProviderName] = "AbpIdentity.Roles.ManagePermissions";
 
