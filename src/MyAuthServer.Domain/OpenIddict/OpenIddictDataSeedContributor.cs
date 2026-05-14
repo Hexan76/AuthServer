@@ -53,7 +53,10 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
         OpenIddictConstants.Permissions.Scopes.Address,
         OpenIddictConstants.Permissions.Scopes.Profile,
         OpenIddictConstants.Permissions.Scopes.Email,
+        OpenIddictConstants.Scopes.OfflineAccess,
+        OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
         OpenIddictConstants.Permissions.Scopes.Roles,
+        OpenIddictConstants.GrantTypes.RefreshToken,
         "MyAuthServer"
     };
 
@@ -107,7 +110,9 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
                 grantTypes: new List<string>
                 {
                     OpenIddictConstants.GrantTypes.AuthorizationCode,
-                    OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange // 🔥 PKCE
+                    OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange,
+                    OpenIddictConstants.GrantTypes.RefreshToken
+                    
                 },
                 scopes: commonScopes,
                 redirectUris: new List<string> 
@@ -204,8 +209,9 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
 
             grantTypes: new List<string>
             {
-                OpenIddictConstants.GrantTypes.AuthorizationCode,
-                OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange // 🔥 PKCE
+                    OpenIddictConstants.GrantTypes.AuthorizationCode,
+                    OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange,
+                    OpenIddictConstants.GrantTypes.RefreshToken
             },
 
             scopes: new List<string>
