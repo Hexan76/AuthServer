@@ -240,18 +240,27 @@ public class PermissionServiceWebModule : AbpModule
         app.UseUnitOfWork();
         app.UseDynamicClaims();
         app.UseAuthorization();
-        app.UseFastEndpoints();
-        app.UseSwagger();
-        app.UseSwaggerUI(options =>
+        app.UseFastEndpoints().UseSwaggerGen().UseSwaggerUi(options =>
         {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "PermissionService API");
-
-            options.OAuthClientId("swagger");
-            options.OAuthClientSecret(null);
-            options.OAuthUsePkce();
-
-            options.OAuthScopes("openid", "profile", "MyAuthServer");
+            options.OAuth2Client= new NSwag.AspNetCore.OAuth2ClientSettings
+            {
+                ClientId = "swagger",
+                ClientSecret = null,
+                UsePkceWithAuthorizationCodeGrant = true,
+                Scopes = { "openid", "profile", "MyAuthServer" }
+            };
         });
+        app.UseSwagger();
+        //app.UseSwaggerUI(options =>
+        //{
+        //    options.SwaggerEndpoint("/swagger/v1/swagger.json", "PermissionService API");
+
+        //    options.OAuthClientId("swagger");
+        //    options.OAuthClientSecret(null);
+        //    options.OAuthUsePkce();
+
+        //    options.OAuthScopes("openid", "profile", "MyAuthServer");
+        //});
 
         app.UseConfiguredEndpoints();
     }
