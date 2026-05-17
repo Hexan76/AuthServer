@@ -74,6 +74,7 @@ public class PermissionServiceWebModule : AbpModule
         });
 
         context.Services.AddFastEndpoints()
+            .FrameworkNSwagDocsPerModule(NSwagSections.GetSections())
                         .SwaggerDocument();
         // =========================
         // AUTH CONFIG (IMPORTANT FIX)
@@ -134,40 +135,45 @@ public class PermissionServiceWebModule : AbpModule
 
     private void ConfigureSwagger(IServiceCollection services)
     {
-        services.AddAbpSwaggerGen(options =>
-        {
-            options.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Title = "PermissionService API",
-                Version = "v1"
-            });
+        //services.AddAbpSwaggerGen(options =>
+        //{
+        //    options.SwaggerDoc("v1", new OpenApiInfo
+        //    {
+        //        Title = "PermissionService API",
+        //        Version = "v1"
+        //    });
 
-            options.DocInclusionPredicate((docName, desc) => true);
-            options.CustomSchemaIds(type => type.FullName);
-        });
-        services.AddSwaggerGen(c =>
-        {
-            c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-            {
-                Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows
-                {
-                    AuthorizationCode = new OpenApiOAuthFlow
-                    {
-                        AuthorizationUrl = new Uri("https://localhost:44310/connect/authorize"),
-                        TokenUrl = new Uri("https://localhost:44310/connect/token"),
-                        Scopes = new Dictionary<string, string>
-                        {
-                            { "MyAuthServer", "Access API" }
-                        }
-                    }
-                }
-            });
-            c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-            {
-                [new OpenApiSecuritySchemeReference("oauth2", document)] = []
-            });
-        });
+        //    options.DocInclusionPredicate((docName, desc) => true);
+        //    options.CustomSchemaIds(type => type.FullName);
+        //});
+
+        //TODO: Remove this and use Nswag??
+        //services.AddSwaggerGen(c =>
+        //{
+        //    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+        //    {
+        //        Type = SecuritySchemeType.OAuth2,
+        //        Flows = new OpenApiOAuthFlows
+        //        {
+        //            AuthorizationCode = new OpenApiOAuthFlow
+        //            {
+        //                AuthorizationUrl = new Uri("https://localhost:44310/connect/authorize"),
+        //                TokenUrl = new Uri("https://localhost:44310/connect/token"),
+        //                Scopes = new Dictionary<string, string>
+        //                {
+        //                    { "openid", "OpenId" },
+        //                    { "profile", "Profile" },
+        //                    { "offline_access", "Refresh token access" },
+        //                    { "MyAuthServer", "Main API" }
+        //                }
+        //            }
+        //        }
+        //    });
+        //    c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+        //    {
+        //        [new OpenApiSecuritySchemeReference("oauth2", document)] = []
+        //    });
+        //});
     }
 
     private void ConfigureUrls(IConfiguration configuration)
@@ -240,18 +246,53 @@ public class PermissionServiceWebModule : AbpModule
         app.UseUnitOfWork();
         app.UseDynamicClaims();
         app.UseAuthorization();
-        app.UseFastEndpoints();
-        app.UseSwagger();
-        app.UseSwaggerUI(options =>
+        app.UseFastEndpoints(c =>
         {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "PermissionService API");
+            c.Versioning.Prefix = "v";
+            c.Versioning.PrependToRoute = true;
+        }).UseSwaggerGen(c => { }, ui =>
+        {
+            ui.OAuth2Client = new()
+            {
+                ClientId = "swagger",
+                ClientSecret = null,
+                AppName = "Swagger UI",
+                UsePkceWithAuthorizationCodeGrant = true,
+            };
+            ui.OAuth2Client.Scopes.Add("openid");
+            ui.OAuth2Client.Scopes.Add("profile");
+            ui.OAuth2Client.Scopes.Add("offline_access");
+            ui.OAuth2Client.Scopes.Add("MyAuthServer");
+        })
+        //TODO: not working, need to check with FastEndpoints team
+        //.UseSwaggerUi(options =>
+        //{
+        //    options.OAuth2Client = new()
+        //    {
+        //        ClientId = "swagger",
+        //        AppName = "Swagger UI",
+        //        UsePkceWithAuthorizationCodeGrant = true,
+        //    };
+        //    options.OAuth2Client.Scopes.Add("openid");
+        //    options.OAuth2Client.Scopes.Add("profile");
+        //    options.OAuth2Client.Scopes.Add("offline_access");
+        //    options.OAuth2Client.Scopes.Add("MyAuthServer");
+        //    //options.ConfigureDefaults();
 
-            options.OAuthClientId("swagger");
-            options.OAuthClientSecret(null);
-            options.OAuthUsePkce();
+        //})
+        ;
 
-            options.OAuthScopes("openid", "profile", "MyAuthServer");
-        });
+        //app.UseSwagger();
+        //app.UseSwaggerUI(options =>
+        //{
+        //    options.SwaggerEndpoint("/swagger/v1/swagger.json", "PermissionService API");
+
+        //    options.OAuthClientId("swagger");
+        //    options.OAuthClientSecret(null);
+        //    options.OAuthUsePkce();
+
+        //    options.OAuthScopes("openid", "profile", "MyAuthServer");
+        //});
 
         app.UseConfiguredEndpoints();
     }
