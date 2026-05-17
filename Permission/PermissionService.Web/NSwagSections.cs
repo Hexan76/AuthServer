@@ -65,7 +65,7 @@ public static class NSwagSections
                                 { "openid", "OpenId" },
                                 { "profile", "Profile" },
                                 { "offline_access", "Refresh token access" },
-                                { "MyAuthServer", "Main API" }
+                                { "AuthServer", "Main API" }
                             }
                     },
                     AuthorizationCode =
@@ -82,7 +82,7 @@ public static class NSwagSections
                                 { "openid", "OpenId" },
                                 { "profile", "Profile" },
                                 { "offline_access", "Refresh token access" },
-                                { "MyAuthServer", "Main API" }
+                                { "AuthServer", "Main API" }
                             }
                         },
                 },

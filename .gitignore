@@ -254,17 +254,17 @@ paket-files/
 # ABP Studio
 **/.abpstudio/
 
-# MyAuthServer
-src/MyAuthServer.Web/Logs/*
-src/MyAuthServer.Web.Host/Logs/*
-src/MyAuthServer.Web.Public/Logs/*
-src/MyAuthServer.Web.Public.Host/Logs/*
-src/MyAuthServer.AuthServer/Logs/*
-src/MyAuthServer.HttpApi.Host/Logs/*
-src/MyAuthServer.HttpApi.HostWithIds/Logs/*
-src/MyAuthServer.DbMigrator/Logs/*
-src/MyAuthServer.Blazor.Server/Logs/*
-src/MyAuthServer.Blazor.Server.Tiered/Logs/*
+# AuthServer
+src/AuthServer.Web/Logs/*
+src/AuthServer.Web.Host/Logs/*
+src/AuthServer.Web.Public/Logs/*
+src/AuthServer.Web.Public.Host/Logs/*
+src/AuthServer.AuthServer/Logs/*
+src/AuthServer.HttpApi.Host/Logs/*
+src/AuthServer.HttpApi.HostWithIds/Logs/*
+src/AuthServer.DbMigrator/Logs/*
+src/AuthServer.Blazor.Server/Logs/*
+src/AuthServer.Blazor.Server.Tiered/Logs/*
 
 # Use abp install-libs to restore.
 **/wwwroot/libs/*
