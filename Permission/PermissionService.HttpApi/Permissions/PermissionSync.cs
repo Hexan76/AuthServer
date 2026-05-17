@@ -14,6 +14,7 @@ public class PermissionSync : BaseEndpoint<DefinitionPermissionsCreate, BaseResp
         Verbs(Http.POST);
         Routes("api/permission-management/sync");
         Tags(["Permissions"]);
+        Version(1);
         Options(c => c.WithTags(["Permissions"]));
         //TODO: NSwag Documention
         Summary(s =>
