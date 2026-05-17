@@ -98,7 +98,7 @@ public class PermissionServiceWebModule : AbpModule
             .AddValidation(options =>
             {
                 options.SetIssuer("https://localhost:44310/");
-                options.AddAudiences("MyAuthServer");
+                options.AddAudiences("AuthServer");
 
                 options.UseSystemNetHttp();
                 options.UseAspNetCore();
@@ -164,7 +164,7 @@ public class PermissionServiceWebModule : AbpModule
         //                    { "openid", "OpenId" },
         //                    { "profile", "Profile" },
         //                    { "offline_access", "Refresh token access" },
-        //                    { "MyAuthServer", "Main API" }
+        //                    { "AuthServer", "Main API" }
         //                }
         //            }
         //        }
@@ -262,7 +262,7 @@ public class PermissionServiceWebModule : AbpModule
             ui.OAuth2Client.Scopes.Add("openid");
             ui.OAuth2Client.Scopes.Add("profile");
             ui.OAuth2Client.Scopes.Add("offline_access");
-            ui.OAuth2Client.Scopes.Add("MyAuthServer");
+            ui.OAuth2Client.Scopes.Add("AuthServer");
         })
         //TODO: not working, need to check with FastEndpoints team
         //.UseSwaggerUi(options =>
@@ -276,7 +276,7 @@ public class PermissionServiceWebModule : AbpModule
         //    options.OAuth2Client.Scopes.Add("openid");
         //    options.OAuth2Client.Scopes.Add("profile");
         //    options.OAuth2Client.Scopes.Add("offline_access");
-        //    options.OAuth2Client.Scopes.Add("MyAuthServer");
+        //    options.OAuth2Client.Scopes.Add("AuthServer");
         //    //options.ConfigureDefaults();
 
         //})
@@ -291,7 +291,7 @@ public class PermissionServiceWebModule : AbpModule
         //    options.OAuthClientSecret(null);
         //    options.OAuthUsePkce();
 
-        //    options.OAuthScopes("openid", "profile", "MyAuthServer");
+        //    options.OAuthScopes("openid", "profile", "AuthServer");
         //});
 
         app.UseConfiguredEndpoints();

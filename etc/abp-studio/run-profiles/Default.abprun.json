@@ -1,9 +1,9 @@
 ﻿{
   "applications": {
-    "MyAuthServer.Web": {
+    "AuthServer.Web": {
       "type": "dotnet-project",
       "launchUrl": "https://localhost:44315",
-      "path": "../../../src/MyAuthServer.Web/MyAuthServer.Web.csproj",
+      "path": "../../../src/AuthServer.Web/AuthServer.Web.csproj",
       "kubernetesService": ".*-web$",
       "healthCheckEndpoint": "/health-status",
       "healthUiEndpoint": "/health-ui",
@@ -13,7 +13,7 @@
     }
   },
   "containers": {
-    "serviceName": "MyAuthServer-Containers",
+    "serviceName": "AuthServer-Containers",
   },
   "tasks":{
     "Initialize Solution":{
